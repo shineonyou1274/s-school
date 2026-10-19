@@ -1,0 +1,728 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>은혜학교 AI 실습 연수</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* 레이아웃: 좌측 노선도형 목차(정류장 점) + 우측 한 절만 보이는 본문. 정류장 표지판의 남색과 하차벨 노랑을 기준색으로 쓴다 */
+:root{
+  --bg:#f5f6f8; --paper:#ffffff; --ink:#18212f; --muted:#5a6575; --line:#dde1e8;
+  --rail:#14233d; --rail-ink:#e6ebf3; --rail-muted:#93a1b8;
+  --accent:#f2b705; --accent-ink:#3a2c00; --accent-soft:#fff6d6;
+  --blue:#2457a6; --blue-soft:#e8eef8;
+  --warn:#b4471d; --warn-soft:#fbece5;
+  --code:#f0f2f6;
+  --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#10151d; --paper:#171e29; --ink:#e7ebf1; --muted:#a2acbb; --line:#2a3342;
+  --rail:#0b111a; --rail-ink:#e6ebf3; --rail-muted:#7f8ca2;
+  --accent:#f2b705; --accent-ink:#2a2000; --accent-soft:#2e2712;
+  --blue:#8fb2ec; --blue-soft:#1b2638; --warn:#f0936b; --warn-soft:#2f1d16; --code:#111821; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#10151d; --paper:#171e29; --ink:#e7ebf1; --muted:#a2acbb; --line:#2a3342;
+  --rail:#0b111a; --rail-ink:#e6ebf3; --rail-muted:#7f8ca2;
+  --accent:#f2b705; --accent-ink:#2a2000; --accent-soft:#2e2712;
+  --blue:#8fb2ec; --blue-soft:#1b2638; --warn:#f0936b; --warn-soft:#2f1d16; --code:#111821; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:16.5px;line-height:1.85;margin:0;word-break:keep-all;overflow-wrap:anywhere}
+a{color:var(--blue)}
+.shell{display:grid;grid-template-columns:246px minmax(0,1fr);min-height:100vh}
+.rail,main{min-width:0}
+.rail{background:var(--rail);color:var(--rail-ink);position:sticky;top:0;height:100vh;overflow-y:auto;padding:22px 0 30px}
+.brand{padding:0 20px 18px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:10px}
+.brand .k{font-family:var(--f-mono);font-size:11px;letter-spacing:.14em;color:var(--accent)}
+.brand b{display:block;font-size:17px;line-height:1.4;margin-top:4px}
+.brand span{display:block;font-size:12.5px;color:var(--rail-muted);margin-top:4px;line-height:1.5}
+.grp{font-family:var(--f-mono);font-size:11px;letter-spacing:.12em;color:var(--rail-muted);padding:14px 20px 4px;text-transform:uppercase}
+.grp em{font-style:normal;color:var(--accent)}
+.rail nav a{position:relative;display:flex;gap:10px;align-items:baseline;padding:6px 16px 6px 36px;color:var(--rail-ink);text-decoration:none;font-size:14px;line-height:1.5}
+.rail nav a::before{content:"";position:absolute;left:22px;top:0;bottom:0;width:2px;background:rgba(255,255,255,.12)}
+.rail nav a::after{content:"";position:absolute;left:18px;top:13px;width:10px;height:10px;border-radius:50%;background:var(--rail);border:2px solid var(--rail-muted)}
+.rail nav a .n{font-family:var(--f-mono);font-size:11.5px;color:var(--rail-muted);min-width:24px}
+.rail nav a:hover{background:rgba(255,255,255,.05)}
+.rail nav a.on{background:rgba(242,183,5,.12)}
+.rail nav a.on::after{background:var(--accent);border-color:var(--accent)}
+.rail nav a.on .n{color:var(--accent)}
+.rail nav a:focus-visible{outline:2px solid var(--accent);outline-offset:-2px}
+main{padding-block:34px 60px;padding-inline:clamp(16px,4vw,56px)}
+.head{max-width:860px;margin-bottom:26px;padding-bottom:18px;border-bottom:1px solid var(--line)}
+.head .k{font-family:var(--f-mono);font-size:12px;letter-spacing:.12em;color:var(--muted)}
+.head h1{font-size:clamp(22px,3vw,30px);line-height:1.35;margin:6px 0 6px;text-wrap:balance}
+.head p{margin:0;color:var(--muted);font-size:15px}
+section{max-width:860px}
+section[hidden]{display:none}
+section h2{font-size:24px;line-height:1.4;margin:0 0 6px;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap;text-wrap:balance}
+section h2 .no{font-family:var(--f-mono);font-size:15px;color:var(--accent-ink);background:var(--accent);padding:1px 8px;border-radius:4px}
+.meta{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);margin-bottom:18px}
+section h3{font-size:18px;margin:30px 0 8px}
+section p{max-width:66ch}
+ol.steps{padding-left:0;list-style:none;counter-reset:s;display:grid;gap:8px;max-width:70ch}
+ol.steps li{counter-increment:s;position:relative;padding:10px 14px 10px 50px;background:var(--paper);border:1px solid var(--line);border-radius:8px}
+ol.steps li::before{content:counter(s);position:absolute;left:14px;top:10px;width:24px;height:24px;border-radius:50%;background:var(--rail);color:#fff;font:600 12.5px/24px var(--f-mono);text-align:center}
+ul.plain{padding-left:1.2em;max-width:70ch}
+ul.plain li{margin:3px 0}
+.box{border-radius:8px;padding:14px 18px;margin:18px 0;max-width:72ch;background:var(--blue-soft);border:1px solid var(--line)}
+.box.warn{background:var(--warn-soft)}
+.box b.t{display:block;font-size:14px;margin-bottom:2px}
+.box.warn b.t{color:var(--warn)}
+.box p{margin:4px 0}
+.prompt{margin:14px 0 22px;border:1px solid var(--line);border-radius:10px;background:var(--paper);overflow:hidden}
+.prompt .bar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 12px 8px 16px;border-bottom:1px solid var(--line);background:var(--code)}
+.prompt .bar span{font-size:14px;font-weight:600}
+.prompt pre{margin:0;padding:14px 16px;font-family:var(--f-body);font-size:15px;line-height:1.85;white-space:pre-wrap;word-break:keep-all;overflow-x:auto}
+button.copy{font:600 13px var(--f-body);background:var(--rail);color:#fff;border:0;border-radius:6px;padding:6px 12px;cursor:pointer;white-space:nowrap}
+button.copy.done{background:var(--accent);color:var(--accent-ink)}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.tbl{overflow-x:auto;margin:14px 0 20px}
+table{border-collapse:collapse;width:100%;font-size:14.5px;line-height:1.7;background:var(--paper)}
+th,td{border:1px solid var(--line);padding:12px 14px;text-align:left;vertical-align:top}
+th{background:var(--code);font-weight:600;white-space:nowrap}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin:16px 0}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px;min-width:0}
+.card .k{font-family:var(--f-mono);font-size:12px;color:var(--muted)}
+.card b{display:block;font-size:16.5px;margin:2px 0 4px}
+.card p{margin:0;font-size:14.5px;line-height:1.7;color:var(--muted)}
+.card a{font-size:14px}
+.blocks{display:grid;gap:12px;margin:18px 0}
+.blk{display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:16px}
+.blk .tm{font-family:var(--f-mono);font-size:13px;color:var(--muted);line-height:1.5}
+.blk .tm b{display:block;font-size:22px;color:var(--ink)}
+.blk h4{margin:0 0 4px;font-size:17px}
+.blk p{margin:0;font-size:15px;color:var(--muted)}
+.tool{border:2px solid var(--accent);border-radius:12px;padding:18px;margin:18px 0;background:var(--paper)}
+.tool .row{display:grid;grid-template-columns:150px minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.tool .row:last-of-type{border-bottom:0}
+.tool label.h{font-weight:600;font-size:14.5px}
+.tool .why{display:block;font-size:12.5px;color:var(--muted);font-weight:400;line-height:1.5}
+.tool select,.tool input[type=text]{font:15px var(--f-body);padding:7px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);width:100%;max-width:420px}
+.chk{display:flex;flex-wrap:wrap;gap:6px 14px}
+.chk label{font-size:14.5px;display:flex;gap:6px;align-items:center;cursor:pointer}
+.nav2{display:flex;justify-content:space-between;gap:12px;margin-top:40px;padding-top:18px;border-top:1px solid var(--line)}
+.nav2 button{font:500 14.5px var(--f-body);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:10px 14px;cursor:pointer;max-width:48%;text-align:left}
+.nav2 button.nx{margin-left:auto;text-align:right;background:var(--rail);color:#fff;border-color:var(--rail)}
+.nav2 small{display:block;font-family:var(--f-mono);font-size:11px;opacity:.7}
+footer{max-width:860px;margin-top:40px;font-size:12.5px;color:var(--muted);font-family:var(--f-mono)}
+.tools{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:14px}
+.tools span{font-family:var(--f-mono);font-size:12.5px;color:var(--muted);margin-right:auto}
+.tools button{font:500 13px var(--f-body);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:5px 11px;cursor:pointer}
+.tools button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.prog{height:5px;background:var(--line);border-radius:3px;margin-top:10px;overflow:hidden}
+.prog i{display:block;height:100%;width:0;background:var(--accent);transition:width .3s}
+mark.fill{background:var(--accent-soft);color:inherit;border-bottom:2px solid var(--accent);padding:0 2px;border-radius:2px}
+:root.big body{font-size:19.5px}
+:root.big .prompt pre{font-size:17.5px}
+:root.big table,:root.big .card p,:root.big .blk p{font-size:16.5px}
+@media print{
+  .rail,.nav2,.tools,.prog,button.copy{display:none!important}
+  .shell{display:block} main{padding:0}
+  section[hidden]{display:block!important}
+  section{break-before:page} section#intro{break-before:auto}
+  body{background:#fff;color:#000;font-size:12pt;line-height:1.7}
+  .prompt pre{font-size:11pt}
+  .box,.prompt,.blk,.card,ol.steps li,tr{break-inside:avoid}
+  *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+@media (max-width:820px){
+  .shell{grid-template-columns:minmax(0,1fr)}
+  .rail{position:sticky;top:env(safe-area-inset-top,0px);height:auto;padding:10px 0;z-index:5}
+  .brand,.grp{display:none}
+  .rail nav{display:flex;overflow-x:auto;gap:4px;padding:0 12px}
+  .rail nav a{padding:6px 12px;white-space:nowrap;border-radius:6px;flex:none}
+  .rail nav a::before,.rail nav a::after{display:none}
+  .tool .row{grid-template-columns:minmax(0,1fr)}
+  .blk{grid-template-columns:minmax(0,1fr);gap:6px}
+}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+
+</head>
+<body>
+<div class="shell">
+<aside class="rail">
+  <div class="brand">
+    <div class="k">교원 연수 · 180분</div>
+    <b>특수학교 AI 실습 연수</b>
+    <span>바이브코딩 · 노트북LM · 에이전트</span>
+  </div>
+  <nav id="menu">
+    <a href="#intro"><span class="n">00</span><span>오늘의 순서</span></a>
+    <div class="grp"><em>1</em> 바이브코딩 · 70분</div>
+    <a href="#v1"><span class="n">1-1</span><span>예시 둘러보기</span></a>
+    <a href="#v2"><span class="n">1-2</span><span>프롬프트 작업대</span></a>
+    <a href="#v3"><span class="n">1-3</span><span>버스 승하차 연습 앱</span></a>
+    <a href="#v4"><span class="n">1-4</span><span>키오스크 주문 연습 앱</span></a>
+    <a href="#v5"><span class="n">1-5</span><span>고치고 공유하기</span></a>
+    <div class="grp"><em>2</em> 노트북LM · 50분</div>
+    <a href="#n1"><span class="n">2-1</span><span>노트북LM 이해하기</span></a>
+    <a href="#n2"><span class="n">2-2</span><span>실습 자료 넣기</span></a>
+    <a href="#n3"><span class="n">2-3</span><span>PBS 분석 프롬프트</span></a>
+    <a href="#n4"><span class="n">2-4</span><span>학생 지원 자료 만들기</span></a>
+    <a href="#n5"><span class="n">2-5</span><span>스튜디오와 확장 프로그램</span></a>
+    <div class="grp"><em>3</em> AI 에이전트 · 50분</div>
+    <a href="#a1"><span class="n">3-1</span><span>개인 인텔리전스 켜기</span></a>
+    <a href="#a2"><span class="n">3-2</span><span>체험학습처 찾기</span></a>
+    <a href="#a3"><span class="n">3-3</span><span>숙소 알아보기</span></a>
+    <a href="#a4"><span class="n">3-4</span><span>겨울방학 여행 계획</span></a>
+    <a href="#a5"><span class="n">3-5</span><span>문서·시트·앱으로 잇기</span></a>
+    <div class="grp">참고</div>
+    <a href="#trouble"><span class="n">Q</span><span>막히는 곳</span></a>
+    <a href="#links"><span class="n">↗</span><span>자료 모음</span></a>
+  </nav>
+</aside>
+
+<main>
+<header class="head">
+  <div class="k">김해은혜학교 교원 연수 · 거창고등학교 손평화</div>
+  <h1>수업 도구를 직접 만들고, 행동지원 자료를 정리하고, 체험학습을 계획하는 AI 실습</h1>
+  <p>왼쪽 목차에서 번호를 누르면 해당 단계만 화면에 나타납니다. 키보드의 ← → 키로도 넘길 수 있습니다. 프롬프트는 복사 버튼으로 가져다 쓰고, 노란색으로 표시된 [ ] 칸만 우리 학교 정보로 바꾸면 됩니다.</p>
+  <div class="tools"><span id="prog-t"></span><button type="button" id="t-big" aria-pressed="false">글자 크게</button><button type="button" id="t-print">전체 인쇄</button></div>
+  <div class="prog" aria-hidden="true"><i id="prog-bar"></i></div>
+</header>
+
+<!-- 00 -->
+<section id="intro">
+  <h2><span class="no">00</span>오늘의 순서</h2>
+  <div class="meta">총 180분 · 쉬는 시간 10분 포함</div>
+  <p>월요일 아침, 담임 선생님이 다음 주 지역사회 적응 수업을 준비하고 있다고 생각해 봅시다. 학생들은 버스 타기와 키오스크 주문을 연습해야 하고, 한 학생의 도전행동 기록을 정리해 행동지원계획을 세워야 하며, 다음 달 현장체험학습 장소도 알아봐야 합니다. 오늘 연수에서는 이 세 가지 일을 AI 도구로 직접 해 봅니다.</p>
+  <div class="blocks">
+    <div class="blk"><div class="tm"><b>70분</b>1-1 ~ 1-5</div><div><h4>1. 바이브코딩으로 연습 앱 만들기</h4><p>제미나이 캔버스에 말로 설명해서 버스 승하차 연습 앱과 패스트푸드점 키오스크 주문 연습 앱을 만들고, 고쳐서 학생 태블릿으로 공유합니다.</p></div></div>
+    <div class="blk"><div class="tm"><b>10분</b>휴식</div><div><h4>쉬는 시간</h4><p>만든 앱을 개인 태블릿에서 열어 보며 쉬셔도 좋습니다.</p></div></div>
+    <div class="blk"><div class="tm"><b>50분</b>2-1 ~ 2-5</div><div><h4>2. 노트북LM으로 긍정적 행동지원(PBS) 자료 만들기</h4><p>행동지원계획서 예시와 ABC 서술기록지를 노트북LM에 넣고, 행동의 기능을 분석한 뒤 먼저-나중 카드와 요청 카드 같은 학생 지원 자료를 만듭니다.</p></div></div>
+    <div class="blk"><div class="tm"><b>50분</b>3-1 ~ 3-5</div><div><h4>3. AI 에이전트로 체험학습과 여행 계획 세우기</h4><p>제미나이의 개인 인텔리전스를 켜고, 학생들이 갈 수 있는 체험학습처와 숙소를 조사한 뒤 겨울방학 여행 계획을 문서, 시트, 캘린더로 정리합니다.</p></div></div>
+  </div>
+  <h3>미리 준비할 것</h3>
+  <ul class="plain">
+    <li>크롬 브라우저와 구글 계정</li>
+    <li>노트북 또는 태블릿 한 대, 가능하면 휴대전화도 함께</li>
+    <li>실습 자료 폴더: <span class="practice-materials-note">실습 자료 폴더 · 연수 중 별도 안내</span></li>
+  </ul>
+  <div class="box"><b class="t">왜 바이브코딩부터 시작하는가</b><p>말로 설명한 내용이 바로 앱으로 바뀌는 경험을 먼저 하면, 뒤에 나오는 노트북LM과 에이전트에서도 "무엇을, 누구를 위해, 어떤 조건으로" 요청해야 하는지 쉽게 감을 잡을 수 있습니다.</p></div>
+</section>
+
+<!-- 1-1 -->
+<section id="v1" hidden>
+  <h2><span class="no">1-1</span>예시 둘러보기</h2>
+  <div class="meta">10분 · 바이브코딩</div>
+  <p>바이브코딩은 코드를 직접 쓰지 않고, 만들고 싶은 화면과 기능을 말로 설명해서 AI가 앱을 만들게 하는 방식입니다. 먼저 완성된 예시 세 가지를 열어 보고, 우리 반 학생에게는 어떤 연습이 필요한지 떠올려 봅니다.</p>
+  <div class="cards">
+    <div class="card"><div class="k">예시 1</div><b>미니 게임 상자</b><p>브라우저에서 바로 실행되는 게임 다섯 편을 한 화면에 모은 예시입니다. 휴대전화 홈 화면에 앱처럼 추가할 수 있습니다.</p><a href="https://shineonyou1274.github.io/games/" target="_blank" rel="noopener">열어 보기</a></div>
+    <div class="card"><div class="k">예시 2</div><b>AI 감정 그림일기</b><p>오늘의 감정을 고르고 짧게 적으면 AI가 그림일기로 바꾸어 주는 예시입니다. 감정 표현 수업에 쓸 수 있습니다.</p><a href="https://share.gemini.google/5QmCOZEs162t" target="_blank" rel="noopener">열어 보기</a></div>
+    <div class="card"><div class="k">예시 3</div><b>바리스타 체험</b><p>전공과 직무 실습에서 하는 음료 만들기 과정을 화면에서 순서대로 연습하는 예시입니다.</p><a href="https://gemini.google.com/share/7a87f668c74a?skid=c24edbde-87c6-484d-9adc-89177e035cf5" target="_blank" rel="noopener">열어 보기</a></div>
+  </div>
+  <h3>예시를 보면서 확인할 것</h3>
+  <ul class="plain">
+    <li>글을 읽지 못하는 학생도 그림과 소리만으로 다음에 무엇을 눌러야 하는지 알 수 있는가</li>
+    <li>전자칠판에서 손을 뻗어 누를 만큼 버튼이 큰가</li>
+    <li>틀렸을 때 학생이 위축되지 않도록 부드럽게 다시 안내하는가</li>
+  </ul>
+  <div class="box"><b class="t">제미나이 캔버스 여는 방법</b><p>gemini.google.com에 접속한 뒤 입력창 왼쪽의 + 버튼(업로드 및 도구)을 누르고 '캔버스'를 선택합니다. 그 상태로 프롬프트를 붙여 넣으면 오른쪽에 코드와 미리보기 화면이 함께 나타납니다.</p><p>입력창 오른쪽의 모델 선택에서 가장 빠른 모델(Flash-Lite)보다 'Pro'처럼 추론이 강한 모델을 고르면 앱의 완성도가 높아집니다. 무료 계정은 Pro 모델을 쓸 수 있는 횟수가 정해져 있으니, 한도 안내가 뜨면 Flash로 바꾸어 이어 갑니다.</p></div>
+</section>
+
+<!-- 1-2 -->
+<section id="v2" hidden>
+  <h2><span class="no">1-2</span>프롬프트 작업대</h2>
+  <div class="meta">10분 · 바이브코딩</div>
+  <p>특수학교 학생용 앱을 요청할 때는 네 가지를 분명히 적으면 결과가 크게 좋아집니다. 누가 쓰는지, 어떤 순서로 무엇을 연습하는지, 어떤 기기에서 쓰는지, 그리고 학생의 읽기 수준과 감각 특성에 맞춘 지원이 무엇인지입니다. 아래 작업대에서 항목을 고르면 프롬프트가 바로 만들어집니다.</p>
+
+  <div class="tool" id="builder">
+    <div class="row"><label class="h" for="b-app">만들 앱<span class="why">연습할 생활 기능을 고릅니다.</span></label>
+      <div><select id="b-app"></select><input type="text" id="b-custom" placeholder="예: 편의점에서 물건 사고 계산하기" hidden style="margin-top:8px"></div></div>
+    <div class="row"><span class="h">연습 단계<span class="why">수업에서 다룰 단계만 남깁니다.</span></span><div class="chk" id="b-steps"></div></div>
+    <div class="row"><label class="h" for="b-level">읽기 수준<span class="why">안내 문장을 어떻게 보여 줄지 정합니다.</span></label>
+      <select id="b-level">
+        <option value="mix">수준이 섞여 있음</option>
+        <option value="none">글을 거의 읽지 못함</option>
+        <option value="word">낱말 정도는 읽음</option>
+        <option value="sent">짧은 문장을 읽음</option>
+      </select></div>
+    <div class="row"><span class="h">지원 기능<span class="why">학생 특성에 맞는 기능을 고릅니다.</span></span><div class="chk" id="b-sup"></div></div>
+    <div class="row"><span class="h">사용 기기<span class="why">화면 크기와 터치 방식이 달라집니다.</span></span><div class="chk" id="b-dev"></div></div>
+  </div>
+  <div class="prompt"><div class="bar"><span>만들어진 프롬프트</span><button class="copy" data-target="b-out">복사</button></div><pre id="b-out"></pre></div>
+  <div class="box"><b class="t">작업대 사용 순서</b><p>먼저 1-3과 1-4의 완성 프롬프트로 앱을 한 번 만들어 봅니다. 그다음 작업대에서 우리 반 학생에게 맞게 단계와 기능을 바꾸어 다시 만들어 보면, 조건 하나가 결과를 얼마나 바꾸는지 비교할 수 있습니다.</p></div>
+</section>
+
+<!-- 1-3 -->
+<section id="v3" hidden>
+  <h2><span class="no">1-3</span>버스 승하차 연습 앱</h2>
+  <div class="meta">20분 · 바이브코딩 실습 1</div>
+  <p>학생들이 학교 앞 정류장에서 버스를 타고 김해 시내로 나가는 장면을 떠올려 봅니다. 정류장에서 기다리고, 번호를 확인해 타고, 교통카드를 찍고, 내릴 곳에서 하차벨을 누르는 과정을 교실에서 미리 연습할 수 있는 앱을 만듭니다.</p>
+  <h3>1단계. 지도 캡처 준비하기</h3>
+  <ol class="steps">
+    <li>카카오맵이나 네이버 지도에서 학교 근처 정류장을 검색합니다.</li>
+    <li>학생들이 실제로 이용하는 정류장, 갈아타는 정류장, 내릴 정류장이 함께 보이도록 화면을 맞춥니다.</li>
+    <li>화면을 캡처하고, 각 정류장을 지나는 버스 번호를 메모해 둡니다. 메모한 내용은 2단계 프롬프트의 노란색 [ ] 칸에 채워 넣습니다.</li>
+    <li>제미나이 입력창 왼쪽의 + 버튼을 눌러 캡처한 지도 이미지를 첨부합니다.</li>
+  </ol>
+  <h3>2단계. 프롬프트 붙여 넣기</h3>
+  <div class="prompt"><div class="bar"><span>버스 승하차 연습 앱</span><button class="copy" data-target="p-bus">복사</button></div><pre id="p-bus">김해은혜학교 학생들이 버스 타기를 연습할 수 있는 웹앱을 HTML, CSS, JavaScript로 만들어 줘.
+
+[사용하는 학생]
+특수학교 학생들이고, 글을 읽는 수준이 서로 달라. 글을 읽지 못하는 학생도 쓸 수 있도록 모든 안내에 그림을 함께 보여 주고, 스피커 버튼을 누르면 안내 문장을 소리로 읽어 줘.
+
+[연습 단계]
+1. 정류장에서 기다리기: 도착 안내판을 보고 내가 탈 버스가 몇 분 뒤에 오는지 확인한다.
+2. 버스 번호 확인하고 타기: 여러 대의 버스 가운데 내가 탈 번호를 골라 앞문으로 탄다.
+3. 교통카드 찍기: 단말기에 카드를 대고 "삑" 소리를 확인한다.
+4. 하차벨 누르고 뒷문으로 내리기: 내릴 정류장 안내 방송이 나오면 벨을 누르고, 버스가 멈춘 뒤 뒷문으로 내린다.
+5. 갈아타기: 내린 정류장에서 다음 버스 번호를 찾아 다시 탄다.
+
+[노선]
+실제 김해 시내버스 노선을 쓸 거야. 첨부한 지도와 아래 정보에 있는 정류장 이름과 버스 번호만 사용해 줘. 지도에 없는 번호나 정류장은 새로 만들지 마.
+- 타는 정류장: <mark class="fill">[정류장 이름]</mark>
+- 처음 탈 버스: <mark class="fill">[버스 번호]</mark>
+- 갈아타는 정류장: <mark class="fill">[정류장 이름]</mark>, 갈아탈 버스: <mark class="fill">[버스 번호]</mark>
+- 내릴 정류장: <mark class="fill">[정류장 이름]</mark>
+
+[기기]
+교실 전자칠판과 학생 개인 태블릿에서 쓸 거야. 손가락으로 누르기 쉽게 버튼을 크게 만들고, 가로 화면과 세로 화면에서 모두 깨지지 않게 해 줘.
+
+[피드백]
+단계를 마칠 때마다 칭찬 문구와 효과음을 들려주고, 틀린 버튼을 누르면 "다시 해 볼까요?"라고 안내하면서 맞는 버튼을 깜빡여 줘.</pre></div>
+  <h3>강사 예시와 비교하기</h3>
+  <p>같은 주제로 미리 만들어 둔 예시입니다. 내가 만든 앱과 비교해 보고, 마음에 드는 기능이 있으면 1-5의 수정 요청으로 가져옵니다.</p>
+  <ul class="plain">
+    <li><a href="https://share.gemini.google/tkOjKGTLTm8K" target="_blank" rel="noopener">버스 승하차 연습 앱 (제미나이로 만든 예시)</a></li>
+    <li><a href="https://share.gemini.google/MIkzNSH0LhoG" target="_blank" rel="noopener">버스 하차 연습 앱 (제미나이로 만든 다른 예시)</a></li>
+  </ul>
+  <div class="box warn"><b class="t">주의: 노선 정보는 직접 확인합니다</b><p>지도를 첨부하지 않으면 AI가 실제로 없는 버스 번호나 정류장 이름을 지어낼 수 있습니다. 앱이 완성되면 버스 번호와 정류장 이름을 지도와 한 번 더 대조합니다.</p></div>
+</section>
+
+<!-- 1-4 -->
+<section id="v4" hidden>
+  <h2><span class="no">1-4</span>키오스크 주문 연습 앱</h2>
+  <div class="meta">20분 · 바이브코딩 실습 2</div>
+  <p>토요일 점심, 학생이 가족과 함께 패스트푸드점에 갔다고 생각해 봅시다. 계산대 대신 키오스크 앞에 서야 하고, 뒤에서 다른 손님이 기다리고 있습니다. 실제 매장에서 당황하지 않도록 교실에서 같은 순서를 여러 번 연습할 수 있는 앱을 만듭니다.</p>
+  <h3>강사 예시 먼저 보기</h3>
+  <div class="cards">
+    <div class="card"><div class="k">강사 예시</div><b>콜드브루 키오스크</b><p>특수학교 직업교육용으로 만든 카페 키오스크 연습 게임입니다. 손님이 말로 주문하면 학생이 키오스크로 주문을 받고, 단계가 올라갈수록 온도와 크기, 결제 수단, 거스름돈이 더해집니다.</p><a href="https://script.google.com/macros/s/AKfycbwvIhxmJJIcVG520QtYEZiaxgsKcKA0oWGiEq9znvVXtjoct5KyGeHNZfr1_n9zHPtmVg/exec" target="_blank" rel="noopener">열어 보기</a></div>
+  </div>
+  <h3>프롬프트 붙여 넣기</h3>
+  <div class="prompt"><div class="bar"><span>패스트푸드점 키오스크 주문 연습 앱</span><button class="copy" data-target="p-kiosk">복사</button></div><pre id="p-kiosk">특수학교 학생들이 패스트푸드점 키오스크 주문을 연습할 수 있는 웹앱을 HTML, CSS, JavaScript로 만들어 줘.
+
+[사용하는 학생]
+읽기 수준이 서로 다른 학생들이야. 메뉴 이름 옆에는 항상 그림을 함께 보여 주고, 버튼을 누르면 그 이름을 소리로 읽어 줘.
+
+[연습 단계]
+1. 시작 화면에서 "매장에서 먹기"와 "포장하기" 가운데 하나를 고른다.
+2. 버거, 세트, 음료, 디저트 가운데 메뉴 분류를 고른다.
+3. 단품과 세트 가운데 하나를 고르고, 세트라면 음료와 사이드를 고른다.
+4. 장바구니에서 주문 내용을 확인하고 수량을 바꾸거나 메뉴를 뺀다.
+5. 카드 결제를 고르고 카드를 넣는 화면을 거친다.
+6. 주문 번호가 적힌 영수증을 받고, 화면에 내 번호가 나오면 음식을 받으러 간다.
+
+[연습 방식]
+선생님이 "불고기버거 세트 하나, 음료는 콜라"처럼 주문 미션을 정해 줄 수 있게 해 줘. 학생이 주문을 마치면 미션과 같은지 확인해서 맞은 부분과 다른 부분을 그림으로 보여 줘.
+실제 키오스크처럼 일정 시간 아무것도 누르지 않으면 처음 화면으로 돌아가는 상황도 연습할 수 있게 해 줘. 이 기능은 선생님이 켜고 끌 수 있어야 해.
+
+[도움 모드]
+도움 모드를 켜면 다음에 눌러야 할 버튼이 노란 테두리로 깜빡이게 해 줘.
+
+[기기]
+교실 전자칠판과 학생 개인 태블릿에서 쓸 거야. 버튼은 손가락으로 누르기 쉽게 크게 만들어 줘.</pre></div>
+  <h3>만든 뒤 해 볼 것</h3>
+  <ul class="plain">
+    <li>도움 모드를 켠 상태와 끈 상태로 같은 미션을 두 번 해 봅니다.</li>
+    <li>장바구니에서 메뉴를 빼는 과정이 학생에게 어렵지 않은지 확인합니다.</li>
+  </ul>
+
+  <h3>실제 메뉴 사진 넣기</h3>
+  <p>학생이 실제 매장에서 본 버거 사진이 앱에 나오면, 교실 연습이 매장 장면과 바로 이어집니다. 앱에 사진을 넣으려면 사진 파일 자체가 아니라 사진이 있는 인터넷 주소가 필요합니다.</p>
+  <div class="tbl"><table>
+    <tr><th>사진이 있는 곳</th><th>주소를 얻는 방법</th></tr>
+    <tr><td>매장 누리집</td><td>메뉴 사진 위에서 마우스 오른쪽 버튼을 누르고 '이미지 주소 복사'를 고릅니다.</td></tr>
+    <tr><td>구글 드라이브</td><td>사진을 드라이브에 올린 뒤 '공유'에서 '링크가 있는 모든 사용자'를 고르고 링크를 복사합니다. 드라이브 공유 링크는 그대로 넣으면 사진이 뜨지 않으므로, 프롬프트에서 썸네일(thumbnail, 작은 미리보기 그림) 주소로 바꾸어 달라고 요청합니다.</td></tr>
+  </table></div>
+  <ol class="steps">
+    <li>버거킹 누리집의 메뉴 페이지에서 앱에 넣을 메뉴를 찾습니다.</li>
+    <li>메뉴 사진 위에서 마우스 오른쪽 버튼을 누르고 '이미지 주소 복사'를 고릅니다.</li>
+    <li>새 탭 주소창에 붙여 넣어 사진만 뜨는지 확인합니다. 누리집 화면이 함께 뜨면 이미지 주소가 아닙니다.</li>
+    <li>메뉴마다 같은 방법으로 주소를 복사해 메모장에 모아 둡니다.</li>
+  </ol>
+  <div class="prompt"><div class="bar"><span>메뉴 사진 넣기</span><button class="copy" data-target="p-img">복사</button></div><pre id="p-img">메뉴 카드의 그림을 아래 실제 메뉴 사진으로 바꾸고, 메뉴 이름과 주문 미션도 사진 속 메뉴에 맞게 바꿔 줘. 지금 있는 기능은 그대로 두고, 바뀐 코드 전체를 줘.
+구글 드라이브 공유 링크가 있으면 thumbnail 주소로 바꾸어 넣어 줘.
+사진이 불러와지지 않을 때는 메뉴 이름과 그림 아이콘이 대신 보이게 해 줘.
+1. 불고기와퍼: <mark class="fill">[사진 주소]</mark>
+2. 와퍼 세트: <mark class="fill">[사진 주소]</mark>
+3. 콜라: <mark class="fill">[사진 주소]</mark>
+4. 감자튀김: <mark class="fill">[사진 주소]</mark></pre></div>
+  <div class="box"><b class="t">사진이 뜨지 않을 때</b><p>누리집이 다른 곳에서 사진을 불러가지 못하게 막아 둔 경우입니다. 사진을 내려받아 구글 드라이브에 올리고, 공유 링크를 [사진 주소] 자리에 붙여 넣습니다. 프롬프트의 thumbnail 문장이 드라이브 링크를 사진 주소로 바꾸어 줍니다.</p></div>
+  <div class="box warn"><b class="t">주의: 메뉴 사진은 수업용으로만 씁니다</b><p>매장 메뉴 사진과 상표는 학급과 학교 안의 수업용으로만 씁니다. 앱을 학교 밖에 공개하려면 직접 찍은 사진이나 AI로 만든 그림으로 바꿉니다.</p></div>
+</section>
+
+<!-- 1-5 -->
+<section id="v5" hidden>
+  <h2><span class="no">1-5</span>고치고 공유하기</h2>
+  <div class="meta">10분 · 바이브코딩</div>
+  <p>처음 만든 앱이 마음에 꼭 들지 않는 것은 자연스러운 일입니다. 고치고 싶은 점을 한 번에 하나씩, 학생이 겪는 장면으로 설명하면 AI가 정확하게 고칩니다.</p>
+  <h3>수정 요청 예시</h3>
+  <div class="prompt"><div class="bar"><span>버튼과 글자 크기</span><button class="copy" data-target="f1">복사</button></div><pre id="f1">전자칠판 앞에 선 학생이 손을 뻗어 누르기에는 버튼이 작아. 버튼과 글자를 지금보다 두 배 크게 해 줘.</pre></div>
+  <div class="prompt"><div class="bar"><span>교사용 설정 화면</span><button class="copy" data-target="f2">복사</button></div><pre id="f2">처음 화면에 선생님용 설정 버튼을 넣어 줘. 설정에서 연습할 단계를 골라서 해당 단계만 연습할 수 있게 하고, 소리 켜기와 끄기도 고를 수 있게 해 줘.</pre></div>
+  <div class="prompt"><div class="bar"><span>칭찬 스티커판</span><button class="copy" data-target="f3">복사</button></div><pre id="f3">학생이 단계를 하나 마칠 때마다 별 스티커를 하나씩 모으는 칭찬판을 화면 위쪽에 넣어 줘. 다섯 개를 모두 모으면 축하 화면을 보여 줘.</pre></div>
+  <div class="prompt"><div class="bar"><span>소리에 예민한 학생</span><button class="copy" data-target="f4">복사</button></div><pre id="f4">소리에 예민한 학생이 있어. 효과음을 작고 부드러운 소리로 바꾸고, 화면 구석에 소리 끄기 버튼을 넣어 줘.</pre></div>
+  <div class="prompt"><div class="bar"><span>화면이 나오지 않을 때</span><button class="copy" data-target="f5">복사</button></div><pre id="f5">미리보기 화면이 하얗게 나오고 아무것도 보이지 않아. 오류를 찾아서 고쳐 줘.</pre></div>
+  <h3>학생 태블릿으로 공유하기</h3>
+  <ol class="steps">
+    <li>캔버스 오른쪽 위의 공유 버튼을 누르고 링크를 복사합니다.</li>
+    <li>복사한 링크를 학급 단톡방이나 클래스룸에 올리거나, QR 코드로 만들어 칠판에 띄웁니다.</li>
+    <li>학생 태블릿에서 링크를 연 뒤 '홈 화면에 추가'를 누르면 앱 아이콘처럼 바로 열 수 있습니다. 안드로이드 크롬은 오른쪽 위 점 세 개 메뉴에, 아이패드 사파리는 공유 버튼 안에 있습니다.</li>
+  </ol>
+  <h3>HTML 파일로 받은 앱 공유하기</h3>
+  <p>클로드나 챗GPT로 앱을 만들면 결과가 .html 파일로 나올 때가 있습니다. 파일을 그대로 보내면 학생 태블릿에서 열기 어려우므로, 아래 방법 가운데 하나로 링크를 만들어 나누어 줍니다.</p>
+  <div class="tbl"><table>
+    <tr><th>방법</th><th>하는 일</th></tr>
+    <tr><td>제미나이 캔버스에 붙이기</td><td>HTML 코드 전체를 복사해 캔버스 입력창에 붙이고 "이 코드를 그대로 실행되는 앱으로 보여 줘"라고 입력합니다. 미리보기가 뜨면 공유 버튼으로 링크를 만듭니다.</td></tr>
+    <tr><td>클로드에서 게시하기</td><td>앱이 열린 아티팩트 창에서 '게시(Publish)' 버튼을 누르고, 만들어진 공개 링크를 복사합니다. 링크를 아는 사람은 누구나 열 수 있으므로 학생 이름 같은 개인정보는 앱에 넣지 않습니다.</td></tr>
+    <tr><td>넷리파이 드롭에 올리기</td><td>넷리파이에 무료로 가입해 로그인한 뒤, <a href="https://app.netlify.com/drop" target="_blank" rel="noopener">app.netlify.com/drop</a> 화면에 .html 파일을 끌어다 놓습니다. 몇 초 뒤에 나오는 주소가 앱 링크입니다. 로그인하지 않고 올리면 사이트가 잠긴 임시 상태로 올라가 학생이 열 수 없고, 한 시간 안에 내 계정으로 가져오지 않으면 사라집니다.</td></tr>
+  </table></div>
+</section>
+
+<!-- 2-1 -->
+<section id="n1" hidden>
+  <h2><span class="no">2-1</span>노트북LM 이해하기</h2>
+  <div class="meta">5분 · 노트북LM</div>
+  <p>노트북LM은 구글이 만든 개인용 AI 연구 도우미입니다. 교사가 올린 PDF, 구글 문서, 웹페이지, 유튜브 영상을 읽고 요약, 질문 만들기, 보고서, 슬라이드, 인포그래픽, 오디오 개요를 만들어 줍니다. 일반 챗봇과 달리 노트북에 올린 자료만 근거로 답하기 때문에, 학생 기록처럼 정확해야 하는 자료를 다룰 때 특히 쓸모가 있습니다.</p>
+  <div class="tbl"><table>
+    <tr><th>특징</th><th>특수교사에게 좋은 점</th></tr>
+    <tr><td>올린 자료 안에서만 답함</td><td>행동지원계획서와 관찰 기록에 없는 내용을 지어내지 않고, 답마다 근거가 된 자료 위치를 표시합니다.</td></tr>
+    <tr><td>반복 업무 자동화</td><td>행동지원계획 초안, 학부모 안내문, 교사용 질의응답처럼 매번 새로 쓰던 문서의 초안을 짧은 요청으로 만듭니다.</td></tr>
+    <tr><td>여러 형태로 바꾸기</td><td>긴 계획서를 오디오 개요나 인포그래픽으로 바꾸어 실무사, 협력 교사와 쉽게 공유할 수 있습니다.</td></tr>
+    <tr><td>학생별 지식 창고</td><td>학생 한 명마다 노트북을 하나씩 만들어 두면, 해당 학생의 기록을 한곳에서 찾고 질문할 수 있습니다.</td></tr>
+  </table></div>
+  <p>무료 계정에서도 노트북 100개, 노트북 하나에 자료 50개, 하루 채팅 50회까지 쓸 수 있어 오늘 실습에는 충분합니다. 한도는 구글 정책에 따라 바뀔 수 있습니다.</p>
+  <div class="box warn"><b class="t">주의: 개인정보는 지우고 올립니다</b><p>실제 학생 자료를 올릴 때는 이름, 생년월일, 연락처, 진단명, 복용 약처럼 학생을 알아볼 수 있는 정보를 지우거나 가명으로 바꾼 뒤 올립니다. 오늘 실습 자료는 연수용 예시 자료입니다. 학교 업무에 쓸 때는 교육청과 학교의 생성형 AI 활용 지침도 함께 확인합니다.</p></div>
+</section>
+
+<!-- 2-2 -->
+<section id="n2" hidden>
+  <h2><span class="no">2-2</span>실습 자료 넣기</h2>
+  <div class="meta">10분 · 노트북LM</div>
+  <p>오늘 실습에서는 초등 3학년 강00 학생의 사례를 다룹니다. 강00 학생은 지적장애가 있으며, 수업 중 욕설과 물건 던지기 행동을 보입니다. 실습 폴더에 있는 세 자료를 하나의 노트북에 넣습니다.</p>
+  <div class="tbl"><table>
+    <tr><th>자료</th><th>담긴 내용</th></tr>
+    <tr><td>(학교형) 고급형 긍정적 행동지원계획서(예시)</td><td>학생 정보, 의사소통 방식, 강화제 목록, 요일과 시간대별 도전적 행동 발생 분포도, 행동 기능 평가, 행동 중재 전략이 들어 있습니다.</td></tr>
+    <tr><td>도전적 행동 우선순위 체크리스트(예시)</td><td>소리 지르기, 자해, 물건 던지기, 침 뱉기를 위험성, 빈도, 지속 기간 같은 아홉 가지 기준으로 0~4점씩 매겨 중재 우선순위를 정한 기록입니다. 물건 던지기가 23점으로 1순위입니다.</td></tr>
+    <tr><td>ABC 서술기록지(예시)</td><td>5월 10일부터 13일까지 오전(10시~12시) 기초 문해, 미술(클레이), 통합놀이 시간에 관찰한 선행사건, 행동, 후속결과 기록입니다. 소리 지르기, 침 뱉기, 물건 던지기가 주로 적혀 있습니다.</td></tr>
+  </table></div>
+  <div class="box"><b class="t">자료마다 이름이 다르게 보여도 괜찮습니다</b><p>체크리스트와 ABC 서술기록지에는 서식 예시에 쓰인 다른 이름이 남아 있습니다. 자료에 이름이 다르게 남아 있으면 강사에게 먼저 확인한 뒤 같은 학생의 기록인지 점검하고 실습합니다.</p></div>
+  <ol class="steps">
+    <li><span class="practice-materials-note">실습 자료 폴더 · 연수 중 별도 안내</span>를 열어 세 PDF를 내 컴퓨터에 내려받습니다.</li>
+    <li>notebooklm.google.com에 접속해 '새 노트북 만들기'를 누릅니다.</li>
+    <li>'소스 추가' 창에 내려받은 PDF 세 개를 한꺼번에 끌어다 놓습니다.</li>
+    <li>노트북 제목을 '강00 행동지원'으로 바꿉니다.</li>
+  </ol>
+  <h3>자료 이름 정리하기</h3>
+  <p>노트북LM은 답의 근거를 보여 줄 때 파일 이름을 그대로 보여 줍니다. 파일 이름이 정리되어 있으면 어느 자료에서 나온 답인지 한눈에 알 수 있습니다.</p>
+  <div class="prompt"><div class="bar"><span>파일 이름 정리</span><button class="copy" data-target="n2p">복사</button></div><pre id="n2p">올린 자료 세 개의 이름을 [연도]_[자료 종류]_[학생]_[내용] 형식으로 바꾸려고 해. 띄어쓰기 대신 밑줄(_)을 쓰고, '예시'나 '서식' 같은 말은 뒤로 보내서 새 이름 목록을 제안해 줘.</pre></div>
+  <p>노트북LM은 이름을 제안만 하고 직접 바꾸지는 못합니다. 왼쪽 소스 목록에서 자료 이름 옆의 점 세 개 메뉴를 눌러 제안받은 이름으로 고칩니다.</p>
+</section>
+
+<!-- 2-3 -->
+<section id="n3" hidden>
+  <h2><span class="no">2-3</span>PBS 분석 프롬프트</h2>
+  <div class="meta">15분 · 노트북LM</div>
+  <p>긍정적 행동지원(PBS, Positive Behavior Support)은 도전행동을 벌로 없애기보다, 행동이 왜 일어나는지 기능을 찾고 같은 기능을 하는 바람직한 행동을 가르치는 접근입니다. 아래 프롬프트를 차례로 입력해 보고, 답 옆에 표시되는 근거 번호를 눌러 원래 자료의 어느 부분인지 확인합니다.</p>
+
+  <div class="prompt"><div class="bar"><span>① 시간대별 발생 원인 찾기</span><button class="copy" data-target="n3a">복사</button></div><pre id="n3a">행동지원계획서의 도전적 행동 발생 분포도와 ABC 서술기록지를 함께 살펴봐 줘.
+1. 분포도에서 강00 학생의 욕설과 물건 던지기가 가장 많이 나타나는 시간대와 요일을 찾아 줘.
+2. ABC 서술기록지가 어느 날짜, 어느 시간대를 기록한 것인지 확인하고, 기록에 나타난 선행사건의 공통점(활동 종류, 교사의 요구, 장소 이동 등)을 정리해 줘.
+3. 두 자료를 바탕으로 행동이 몰리는 이유를 가설로 세워 줘. 기록이 없는 시간대는 추측하지 말고 '기록 없음'이라고 쓴 뒤, 그 시간대에 어떤 ABC 기록을 더 모아야 하는지 알려 줘.
+4. 행동이 가장 많은 시간대가 시작되기 직전에 계획서의 강화제를 어떻게 배치하면 행동을 예방할 수 있는지 계획을 짜 줘.</pre></div>
+  <div class="box"><b class="t">① 답에서 눈여겨볼 점</b><p>분포도에서는 오후(13시~15시)에 행동이 가장 많지만, ABC 서술기록지는 오전 기록뿐입니다. 노트북LM이 '기록 없음'이라고 솔직하게 답하는지, 오전 기록을 오후의 원인처럼 엮어 말하는지 근거 번호를 눌러 확인해 봅니다.</p></div>
+
+  <div class="prompt"><div class="bar"><span>② 행동 기능과 중재 전략 표</span><button class="copy" data-target="n3b">복사</button></div><pre id="n3b">강00 학생의 욕설은 '관심', 물건 던지기는 '회피' 기능으로 평가되어 있고, 계획서 8번에 행동중재전략이 정리되어 있어.
+이 전략을 담임교사와 실무사가 내일 아침부터 바로 할 수 있는 행동으로 바꾸어 표로 정리해 줘. 행동마다 예방 전략, 대체행동 지도, 후속결과 전략 칸을 두고, 각 칸에는 누가, 언제, 무엇을 하고 어떤 말을 하는지 드러나게 적어 줘.</pre></div>
+
+  <div class="prompt"><div class="bar"><span>③ 기능적 의사소통 훈련(FCT)과 토큰 계획</span><button class="copy" data-target="n3c">복사</button></div><pre id="n3c">강00 학생은 "밥 주세요", "화장실", "싫어요" 정도의 짧은 말을 할 수 있어. 클레이나 태블릿 문해 활동이 하기 싫을 때 물건을 던지는 대신 "쉬고 싶어요" 카드를 내밀거나 손을 드는 행동을 가르치려고 해.
+이 대체행동을 가르치는 단계를 순서대로 써 주고, 계획서의 강화제 목록에 있는 팝잇이나 티라노 피규어를 활용한 토큰 경제 방법도 함께 설계해 줘.</pre></div>
+
+  <div class="prompt"><div class="bar"><span>④ 행동 발생 즉시 1분 대응 매뉴얼</span><button class="copy" data-target="n3d">복사</button></div><pre id="n3d">ABC 서술기록지를 보면 교사나 실무사가 "소리 지르지 않아요"라고 말로 제지하거나, 운동장으로 내보내거나, 프로그램실에 혼자 있게 할 때 오히려 행동이 이어지거나 하기 싫은 활동을 피하는 데 성공하는 장면이 보여.
+강00 학생이 수업 중 욕설을 하거나 물건을 던질 때, 담임교사와 특수교육실무사가 관심은 최소로 주면서 안전을 지키는 1분 대응 매뉴얼을 표로 만들어 줘. 교사가 할 말, 실무사가 할 일, 하지 말아야 할 말을 칸을 나누어 적고, 계획서의 반응 전략과 어긋나지 않게 해 줘.</pre></div>
+
+  <div class="prompt"><div class="bar"><span>⑤ 협력 교사용 질의응답</span><button class="copy" data-target="n3e">복사</button></div><pre id="n3e">통합학급 담임교사와 협력 강사가 강00 학생을 지도할 때 가장 많이 물어볼 질문 다섯 가지와 답을 만들어 줘. 답마다 끝에 근거가 된 자료 이름을 적어 줘.</pre></div>
+
+  <div class="box"><b class="t">답을 그대로 쓰지 않고 검토합니다</b><p>노트북LM의 답은 초안입니다. 근거 번호를 눌러 원래 기록과 맞는지 확인하고, 학생을 직접 아는 교사의 판단으로 고쳐서 사용합니다.</p></div>
+</section>
+
+<!-- 2-4 -->
+<section id="n4" hidden>
+  <h2><span class="no">2-4</span>학생 지원 자료 만들기</h2>
+  <div class="meta">10분 · 노트북LM</div>
+  <p>분석이 끝나면 학생의 책상과 교실 벽에 붙일 자료를 만듭니다. 노트북LM이 문구와 구성을 만들면, 2-5에서 인포그래픽이나 이미지로 바꿉니다.</p>
+
+  <div class="prompt"><div class="bar"><span>먼저-나중 카드</span><button class="copy" data-target="n4a">복사</button></div><pre id="n4a">강00 학생의 ABC 서술기록지와 강화제 정보를 바탕으로, 책상에 붙일 '먼저-나중 카드' 세 세트를 만들어 줘.
+'먼저' 칸에는 학생이 피하려는 활동(클레이 만들기, 태블릿 문해 활동 등)을, '나중' 칸에는 계획서 강화제 목록에 있는 것 가운데 학생이 좋아하는 활동(티라노 피규어 놀이, 트롯 노래 한 곡 듣기, 초코송이 세 알 등)을 짝지어 줘. 교사가 카드를 보여 주며 할 말도 한 문장씩 적어 줘.</pre></div>
+
+  <div class="prompt"><div class="bar"><span>교실 생활 약속판</span><button class="copy" data-target="n4b">복사</button></div><pre id="n4b">강00 학생은 티라노 피규어를 아주 좋아해. 교실 벽에 코팅해서 붙일 '티라노와 함께하는 오늘의 약속판' 문구를 만들어 줘.
+욕설과 물건 던지기 대신 할 수 있는 행동을 약속 세 가지로 짧고 분명하게 쓰고, 약속마다 옆에 들어갈 그림(예: 티라노가 엄지를 치켜드는 모습)을 설명해 줘.</pre></div>
+
+  <div class="prompt"><div class="bar"><span>요청 카드 세 종류</span><button class="copy" data-target="n4c">복사</button></div><pre id="n4c">강00 학생이 물건을 던지거나 욕설을 하는 대신 꺼낼 수 있는 요청 카드 세 종류를 만들어 줘.
+1. 쉬고 싶을 때 쓰는 '쉬고 싶어요' 카드
+2. 도움이 필요할 때 쓰는 '도와주세요' 카드
+3. 관심을 받고 싶을 때 쓰는 '저기요' 카드
+카드마다 앞면 문구, 앞면 그림 설명, 카드를 냈을 때 교사가 바로 해 줄 일을 적어 줘.</pre></div>
+
+  <div class="prompt"><div class="bar"><span>하루 행동 점검표(CICO)</span><button class="copy" data-target="n4d">복사</button></div><pre id="n4d">강00 학생을 위한 체크인-체크아웃(CICO, 등교할 때 목표를 확인하고 하교할 때 하루를 점검하는 방법) 기록지를 표로 만들어 줘.
+시간대는 계획서의 등하교 시간에 맞추어 등교(10시), 10시~11시, 11시~12시, 점심시간, 13시~14시, 14시~15시, 15시~16시, 하교로 나누고, 목표 행동은 '고운 말 쓰기'와 '물건은 책상 위에 두기'로 해 줘. 점수는 웃는 얼굴 2점, 보통 얼굴 1점, 우는 얼굴 0점으로 표시해 줘.</pre></div>
+</section>
+
+<!-- 2-5 -->
+<section id="n5" hidden>
+  <h2><span class="no">2-5</span>스튜디오와 확장 프로그램</h2>
+  <div class="meta">10분 · 노트북LM</div>
+  <p>노트북LM 오른쪽의 스튜디오에서는 올린 자료를 여러 형태의 결과물로 바꿀 수 있습니다.</p>
+  <div class="tbl"><table>
+    <tr><th>기능</th><th>특수학교에서 쓰는 예</th></tr>
+    <tr><td>오디오 개요</td><td>행동지원계획의 핵심을 두 진행자가 대화하듯 설명하는 음성으로 만들어, 실무사가 출근길에 들을 수 있게 합니다.</td></tr>
+    <tr><td>동영상 개요</td><td>학부모 상담 전에 행동지원 방향을 짧은 설명 영상으로 보여 줍니다.</td></tr>
+    <tr><td>마인드맵</td><td>행동, 기능, 중재 전략의 관계를 한 장의 그림으로 정리합니다.</td></tr>
+    <tr><td>보고서</td><td>근거가 표시된 행동지원계획 요약 보고서를 만듭니다.</td></tr>
+    <tr><td>인포그래픽</td><td>요청 카드와 약속판처럼 교실에 붙일 한 장짜리 자료를 만듭니다.</td></tr>
+    <tr><td>슬라이드</td><td>교내 사례 협의회에서 발표할 슬라이드를 만듭니다.</td></tr>
+    <tr><td>데이터 표</td><td>날짜별 행동 발생 기록을 표로 모아 변화 추이를 살펴봅니다.</td></tr>
+  </table></div>
+  <h3>Shiny Prompt Studio로 인포그래픽 디자인 고르기</h3>
+  <p>인포그래픽을 기본 설정으로 만들면 모양이 비슷비슷하게 나옵니다. <a href="https://chromewebstore.google.com/detail/hfmbagpaaijdahkimekofiglhjbncoji?utm_source=item-share-cb" target="_blank" rel="noopener">Shiny Prompt Studio</a>는 47가지 이미지 스타일 가운데 하나를 고르면, 해당 스타일을 노트북LM 인포그래픽 요청문으로 바꾸어 주는 크롬 확장 프로그램입니다.</p>
+  <ol class="steps">
+    <li>크롬 웹스토어에서 Shiny Prompt Studio를 열고 'Chrome에 추가'를 누릅니다.</li>
+    <li>브라우저 오른쪽 위의 퍼즐 모양 아이콘에서 Shiny Prompt Studio를 고정합니다.</li>
+    <li>확장 프로그램을 열고 샘플 이미지를 보며 학생 연령에 맞는 스타일 카드를 고릅니다.</li>
+    <li>변환 대상을 NotebookLM으로 고른 뒤 만들어진 요청문을 복사합니다.</li>
+    <li>노트북LM 스튜디오에서 인포그래픽의 맞춤설정 버튼을 누르고, 복사한 요청문과 함께 "2-4에서 만든 요청 카드 세 종류로 만들어 줘"라고 덧붙입니다.</li>
+  </ol>
+  <div class="box"><b class="t">학생용 자료는 단순하게</b><p>발달장애 학생에게 보여 줄 자료는 그림이 크고 배경이 단순한 스타일을 고릅니다. 한 장에 담는 정보는 세 가지를 넘지 않게 하는 것이 좋습니다.</p></div>
+</section>
+
+<!-- 3-1 -->
+<section id="a1" hidden>
+  <h2><span class="no">3-1</span>개인 인텔리전스 켜기</h2>
+  <div class="meta">10분 · AI 에이전트</div>
+  <p>AI 에이전트는 사용자가 단계마다 지시하지 않아도 스스로 목표를 세우고, 계획을 짜고, 검색이나 문서 작성 같은 도구를 써서 여러 단계의 일을 처리하는 AI입니다. 제미나이가 내 구글 문서, 시트, 캘린더에 직접 결과를 만들어 넣으려면 먼저 개인 인텔리전스와 연결된 앱을 켜야 합니다.</p>
+  <ol class="steps">
+    <li>제미나이 화면 왼쪽 아래의 설정을 누르고 '개인 인텔리전스'를 엽니다.</li>
+    <li>화면 맨 위의 개인 인텔리전스 스위치가 꺼져 있으면 켭니다.</li>
+    <li>설정 메뉴의 '활동'에서 활동 기록이 '사용 중지'로 되어 있으면 '사용 설정'으로 바꾸고 확인을 누릅니다. 활동 기록이 꺼져 있으면 앱을 연결할 수 없습니다.</li>
+    <li>개인 인텔리전스 화면으로 돌아와 '연결된 앱'으로 들어갑니다.</li>
+    <li>Google Workspace가 '사용 중' 목록에 없으면 전체 목록에서 찾아 '추가'를 누릅니다.</li>
+    <li>연결 안내 화면에 나오는 동의란 두 곳에 모두 체크한 뒤 연결합니다.</li>
+    <li>새 채팅을 열고 3-2부터 이어지는 요청을 입력합니다.</li>
+  </ol>
+  <div class="box"><b class="t">'작업' 모드가 보이면 써 봅니다</b><p>입력창 위에 '채팅'과 '작업(Task)'을 고르는 버튼이 보이는 계정이라면 '작업'을 고른 뒤 3-2의 요청을 넣어 봅니다. 제미나이가 검색, 비교, 정리를 여러 단계로 나누어 스스로 진행합니다. 버튼이 없으면 일반 채팅으로도 같은 실습을 할 수 있습니다.</p></div>
+  <div class="box warn"><b class="t">주의: 학교 계정에서는 메뉴가 보이지 않을 수 있습니다</b><p>교육청이나 학교가 관리하는 계정은 관리자 설정에 따라 개인 인텔리전스나 연결된 앱이 막혀 있을 수 있습니다. 메뉴가 보이지 않으면 개인 구글 계정으로 실습합니다.</p></div>
+</section>
+
+<!-- 3-2 -->
+<section id="a2" hidden>
+  <h2><span class="no">3-2</span>체험학습처 찾기</h2>
+  <div class="meta">10분 · AI 에이전트 실습 1</div>
+  <p>다음 달 중학부 현장체험학습을 준비하고 있다고 생각해 봅시다. 휠체어를 쓰는 학생과 소리에 예민한 학생이 함께 가기 때문에, 일반 학교의 체험학습 목록을 그대로 쓰기 어렵습니다. 조건을 자세히 적어 에이전트에게 조사를 맡깁니다.</p>
+  <div class="prompt"><div class="bar"><span>당일 체험학습처 조사</span><button class="copy" data-target="a2a">복사</button></div><pre id="a2a">김해은혜학교 중학부 학생 12명과 교사, 실무사 8명이 11월 평일에 당일 현장체험학습을 가려고 해. 학교에서 버스로 1시간 안에 갈 수 있는 체험학습처 다섯 곳을 찾아 줘.
+휠체어를 쓰는 학생이 2명 있어서 경사로나 엘리베이터, 장애인 화장실이 있어야 해. 큰 소리에 예민한 학생도 있으니 평일 오전에 비교적 조용하고 단체 예약이 되는 곳이면 좋겠어.
+장소마다 이동 시간, 입장료와 장애인 할인, 단체 예약 방법, 버스 주차 가능 여부, 점심 먹을 곳을 표로 정리하고 공식 홈페이지 주소를 붙여 줘.</pre></div>
+  <h3>이어서 요청하기</h3>
+  <div class="prompt"><div class="bar"><span>사전 확인 전화 목록</span><button class="copy" data-target="a2b">복사</button></div><pre id="a2b">위 다섯 곳 가운데 두 곳을 골랐어. 예약 전에 각 장소에 전화해서 확인해야 할 질문을 장애 학생 단체 방문에 맞추어 열 가지씩 정리해 줘.</pre></div>
+  <div class="prompt"><div class="bar"><span>사전 답사 체크리스트와 가정통신문</span><button class="copy" data-target="a2c">복사</button></div><pre id="a2c">첫 번째 장소로 정했어. 사전 답사 때 확인할 체크리스트와, 학부모에게 보낼 체험학습 안내 가정통신문 초안을 구글 문서로 만들어 줘.</pre></div>
+  <div class="box warn"><b class="t">주의: 편의시설 정보는 직접 확인합니다</b><p>홈페이지의 무장애 시설 정보는 오래되었거나 일부만 맞을 수 있습니다. 경사로, 장애인 화장실, 휠체어 대여 여부는 예약 전에 반드시 전화로 확인합니다.</p></div>
+</section>
+
+<!-- 3-3 -->
+<section id="a3" hidden>
+  <h2><span class="no">3-3</span>숙소 알아보기</h2>
+  <div class="meta">10분 · AI 에이전트 실습 2</div>
+  <p>고등부 학생들이 1박 2일 수학여행을 가는 상황입니다. 숙박이 있는 활동은 객실 구조, 응급 상황 대처, 식사 방식까지 함께 따져야 하므로 조건이 많습니다. 에이전트는 이런 비교 조사를 특히 잘합니다.</p>
+  <div class="prompt"><div class="bar"><span>수학여행 숙소 비교</span><button class="copy" data-target="a3a">복사</button></div><pre id="a3a">김해은혜학교 고등부 학생 10명과 인솔 교사 6명이 내년 5월에 경주로 1박 2일 수학여행을 가려고 해. 숙소 후보 다섯 곳을 찾아서 비교해 줘.
+조건은 이래.
+- 장애인 객실이 있거나, 엘리베이터와 경사로로 휠체어 이동이 가능할 것
+- 남학생 방과 여학생 방을 나누고, 교사 방이 학생 방과 같은 층에 있을 것
+- 가장 가까운 응급실까지 차로 15분 이내일 것
+- 저녁과 아침 단체 식사가 가능하고, 알레르기 학생을 위해 메뉴 조정이 될 것
+숙소마다 1인당 예상 비용, 객실 구성, 응급실까지 거리, 단체 예약 연락처를 표로 정리해 줘.</pre></div>
+  <div class="prompt"><div class="bar"><span>일정과 연결하기</span><button class="copy" data-target="a3b">복사</button></div><pre id="a3b">두 번째 숙소를 기준으로, 숙소에서 30분 안에 갈 수 있고 휠체어로 관람할 수 있는 경주 체험 장소를 넣어서 1박 2일 일정을 시간표로 짜 줘. 이동할 때마다 쉬는 시간과 화장실 들를 곳도 넣어 줘.</pre></div>
+</section>
+
+<!-- 3-4 -->
+<section id="a4" hidden>
+  <h2><span class="no">3-4</span>겨울방학 여행 계획</h2>
+  <div class="meta">10분 · AI 에이전트 실습 3</div>
+  <p>마지막 실습은 학교 일을 잠시 내려놓고, 겨울방학 여행을 계획해 보는 것입니다. 나를 위한 여행과, 학부모에게 추천할 수 있는 가족 여행 가운데 하나를 골라 해 봅니다.</p>
+  <h3>가. 나의 겨울방학 여행</h3>
+  <div class="prompt"><div class="bar"><span>해외 가족 여행</span><button class="copy" data-target="a4a">복사</button></div><pre id="a4a">2026년 12월 말부터 2027년 2월 사이에 일본 여행을 계획하고 있어. 4인 가족이고 예산은 약 800만 원이야. 김해공항에서 출발하는 3박 4일 일정으로 항공권, 숙소, 하루별 코스를 알아봐 줘.
+가장 가성비 좋은 조합으로 하되, 온천과 쇼핑이 적절히 섞이게 해 줘.</pre></div>
+  <h3>나. 학부모에게 추천할 가족 여행</h3>
+  <div class="prompt"><div class="bar"><span>발달장애 자녀와 함께하는 국내 여행</span><button class="copy" data-target="a4b">복사</button></div><pre id="a4b">발달장애가 있는 초등학생 자녀와 부모, 형제까지 4명이 겨울방학에 2박 3일로 국내 여행을 가려고 해. 김해에서 출발하고, 자동차로 이동해.
+아이가 낯선 곳에서 큰 소리와 긴 줄 서기를 힘들어하니, 사람이 덜 붐비는 시간에 갈 수 있고 쉴 공간이 있는 장소 위주로 일정을 짜 줘. 숙소는 독채나 조용한 객실로, 아이가 좋아하는 물놀이를 실내에서 할 수 있으면 좋겠어.
+장애인 할인이나 우선 입장 제도가 있는 곳은 따로 표시해 줘.</pre></div>
+  <h3>이어서 질문하기 (가. 해외 여행을 고른 경우)</h3>
+  <div class="prompt"><div class="bar"><span>예산 조정</span><button class="copy" data-target="a4c">복사</button></div><pre id="a4c">항공권과 숙박비를 합쳐서 400만 원 이하로 낮추고 싶어. 12월, 1월, 2월 가운데 어느 주에 출발하는 것이 가장 좋은지 가격 흐름과 함께 알려 줘.</pre></div>
+  <div class="prompt"><div class="bar"><span>이동 동선</span><button class="copy" data-target="a4d">복사</button></div><pre id="a4d">렌터카 없이 버스와 기차로만 다니려고 해. 가장 효율적인 이동 순서와 쓸 만한 교통 패스, 예상 교통비를 정리해 줘.</pre></div>
+</section>
+
+<!-- 3-5 -->
+<section id="a5" hidden>
+  <h2><span class="no">3-5</span>문서·시트·앱으로 잇기</h2>
+  <div class="meta">10분 · AI 에이전트</div>
+  <p>개인 인텔리전스로 워크스페이스를 연결해 두었기 때문에, 대화창에서 조사한 내용을 바로 내 드라이브와 캘린더에 넣을 수 있습니다. 3-2부터 3-4까지 한 실습 가운데 하나를 골라 이어서 요청합니다.</p>
+  <div class="prompt"><div class="bar"><span>구글 시트 일정표와 예산표</span><button class="copy" data-target="a5a">복사</button></div><pre id="a5a">지금 정리한 내용을 더 자세히 나누어서 구글 스프레드시트로 일정표와 예산표를 만들어 줘. 날짜별로 일정을 정리하고, 예산과 준비물도 함께 넣어 줘.</pre></div>
+  <div class="prompt"><div class="bar"><span>구글 문서 계획서</span><button class="copy" data-target="a5b">복사</button></div><pre id="a5b">위 내용을 정리해서 계획서를 구글 문서로 만들어 줘.</pre></div>
+  <div class="prompt"><div class="bar"><span>구글 캘린더 등록</span><button class="copy" data-target="a5c">복사</button></div><pre id="a5c">확정한 일정을 내 구글 캘린더에 등록해 줘. 출발 하루 전에 알림이 오게 해 줘.</pre></div>
+  <div class="box"><b class="t">시트나 문서가 바로 만들어지지 않을 때</b><p>답에 나온 표 아래의 'Sheets로 내보내기' 버튼을 누르면 같은 내용이 구글 시트로 저장됩니다. 글로 된 답은 답 아래의 공유 메뉴에서 'Docs로 내보내기'를 고릅니다.</p></div>
+  <h3>바이브코딩으로 다시 잇기</h3>
+  <p>여행 일정표를 학생이나 가족이 휴대전화로 보기 쉬운 앱으로 만들 수도 있습니다. 강사가 만든 <a href="https://fukuo-travel.netlify.app/" target="_blank" rel="noopener">여행 일정 앱 예시</a>를 열어 본 뒤, 제미나이 캔버스에서 다음과 같이 요청합니다.</p>
+  <div class="prompt"><div class="bar"><span>여행 안내 앱 만들기</span><button class="copy" data-target="a5d">복사</button></div><pre id="a5d">위 여행 계획을 바탕으로 휴대전화에서 보기 좋은 여행 안내 웹앱을 HTML로 만들어 줘. 일정표, 준비물 체크리스트, 예산표, 장소별 지도 링크를 탭으로 나누어 줘. 체험학습용이라면 학생이 보는 화면에는 그림과 큰 글씨를 써 줘.</pre></div>
+  <div class="box"><b class="t">오늘 배운 세 가지가 이어지는 지점</b><p>에이전트로 조사하고, 노트북LM으로 근거를 정리하고, 바이브코딩으로 학생이 쓸 도구를 만듭니다. 세 도구를 한 번씩 써 보았으니, 다음 체험학습 준비에서는 순서대로 연결해 볼 수 있습니다.</p></div>
+</section>
+
+<!-- trouble -->
+<section id="trouble" hidden>
+  <h2><span class="no">Q</span>막히는 곳</h2>
+  <div class="meta">실습 중 자주 생기는 문제</div>
+  <div class="tbl"><table>
+    <tr><th>증상</th><th>원인</th><th>해결</th></tr>
+    <tr><td>캔버스 미리보기가 하얗게 나옵니다.</td><td>만들어진 코드에 오류가 있습니다.</td><td>"미리보기 화면이 하얗게 나와. 오류를 찾아서 고쳐 줘."라고 입력합니다.</td></tr>
+    <tr><td>음성 읽기 버튼을 눌러도 소리가 나지 않습니다.</td><td>태블릿이 무음 상태이거나, 브라우저가 첫 터치 전에는 소리를 막습니다.</td><td>기기 소리를 켜고, 시작 화면에서 한 번 누른 뒤 다시 시도합니다.</td></tr>
+    <tr><td>앱에 실제로 없는 버스 번호가 나옵니다.</td><td>AI가 노선 정보를 몰라서 지어냈습니다.</td><td>지도 캡처를 첨부하고, 버스 번호와 정류장 이름을 프롬프트에 직접 적습니다.</td></tr>
+    <tr><td>노트북LM 답에 근거 번호가 없습니다.</td><td>왼쪽 소스 목록에서 자료 선택이 해제되어 있습니다.</td><td>소스 목록의 체크 상자를 모두 선택한 뒤 다시 질문합니다.</td></tr>
+    <tr><td>노트북LM이 PDF 내용을 읽지 못합니다.</td><td>스캔한 이미지 PDF는 글자를 인식하지 못할 때가 있습니다.</td><td>글자를 복사할 수 있는 PDF나 구글 문서로 바꾸어 다시 올립니다.</td></tr>
+    <tr><td>설정에 개인 인텔리전스 메뉴가 없습니다.</td><td>학교 관리 계정에서 기능이 막혀 있습니다.</td><td>개인 구글 계정으로 로그인해 실습합니다.</td></tr>
+    <tr><td>에이전트가 시트나 캘린더를 만들지 못합니다.</td><td>Google Workspace 연결이 켜져 있지 않습니다.</td><td>3-1의 5번과 6번을 다시 확인합니다. 급할 때는 표 아래의 'Sheets로 내보내기'를 씁니다.</td></tr>
+    <tr><td>앱을 만드는 도중 답이 멈추거나 사용 한도 안내가 뜹니다.</td><td>무료 계정에서 Pro 모델을 쓸 수 있는 횟수를 다 썼습니다.</td><td>모델 선택에서 Flash로 바꾸고 "이어서 만들어 줘"라고 입력합니다.</td></tr>
+    <tr><td>학생이 넷리파이 링크를 열면 암호를 묻습니다.</td><td>로그인하지 않고 올린 사이트는 잠긴 임시 상태입니다.</td><td>넷리파이에 로그인한 뒤 파일을 다시 끌어다 놓습니다.</td></tr>
+    <tr><td>노트북LM 답에 강00이 아닌 다른 이름이 나옵니다.</td><td>체크리스트와 ABC 기록지에 서식 예시 이름이 남아 있습니다.</td><td>강사에게 이름과 자료의 대응 관계를 먼저 확인한 뒤 진행합니다.</td></tr>
+  </table></div>
+</section>
+
+<!-- links -->
+<section id="links" hidden>
+  <h2><span class="no">↗</span>자료 모음</h2>
+  <div class="meta">오늘 연수에서 쓴 링크</div>
+  <div class="tbl"><table>
+    <tr><th>구분</th><th>자료</th></tr>
+    <tr><td>바이브코딩 예시</td><td><a href="https://shineonyou1274.github.io/games/" target="_blank" rel="noopener">미니 게임 상자</a> · <a href="https://share.gemini.google/5QmCOZEs162t" target="_blank" rel="noopener">AI 감정 그림일기</a> · <a href="https://gemini.google.com/share/7a87f668c74a?skid=c24edbde-87c6-484d-9adc-89177e035cf5" target="_blank" rel="noopener">바리스타 체험</a></td></tr>
+    <tr><td>버스 앱 강사 예시</td><td><a href="https://share.gemini.google/tkOjKGTLTm8K" target="_blank" rel="noopener">승하차 연습 앱</a> · <a href="https://share.gemini.google/MIkzNSH0LhoG" target="_blank" rel="noopener">하차 연습 앱</a></td></tr>
+    <tr><td>노트북LM 실습 자료</td><td><span class="practice-materials-note">실습 자료 폴더 · 연수 중 별도 안내</span></td></tr>
+    <tr><td>크롬 확장 프로그램</td><td><a href="https://chromewebstore.google.com/detail/hfmbagpaaijdahkimekofiglhjbncoji?utm_source=item-share-cb" target="_blank" rel="noopener">Shiny Prompt Studio</a></td></tr>
+    <tr><td>여행 앱 예시</td><td><a href="https://fukuo-travel.netlify.app/" target="_blank" rel="noopener">여행 일정 앱</a></td></tr>
+    <tr><td>도구</td><td><a href="https://gemini.google.com/" target="_blank" rel="noopener">제미나이</a> · <a href="https://notebooklm.google.com/" target="_blank" rel="noopener">노트북LM</a></td></tr>
+  </table></div>
+</section>
+
+<div class="nav2"><button id="prev" type="button"></button><button id="next" class="nx" type="button"></button></div>
+<footer>© shiny-peace · 거창고등학교 손평화</footer>
+</main>
+</div>
+
+<script>
+(function(){
+  /* ---------- 절 전환 ---------- */
+  var SECTIONS=[].slice.call(document.querySelectorAll("main section"));
+  var LINKS=[].slice.call(document.querySelectorAll("#menu a"));
+  var prev=document.getElementById("prev"), next=document.getElementById("next");
+  function label(i){ var a=LINKS[i]; return a.querySelector(".n").textContent+"  "+a.lastChild.textContent; }
+  function show(id,push){
+    var i=SECTIONS.map(function(s){return s.id}).indexOf(id); if(i<0)i=0;
+    SECTIONS.forEach(function(s,k){s.hidden=(k!==i)});
+    LINKS.forEach(function(a,k){a.classList.toggle("on",k===i)});
+    prev.hidden=(i===0); next.hidden=(i===SECTIONS.length-1);
+    if(i>0) prev.innerHTML="<small>이전</small>"+label(i-1);
+    if(i<SECTIONS.length-1) next.innerHTML="<small>다음</small>"+label(i+1);
+    prev.dataset.to=i>0?SECTIONS[i-1].id:""; next.dataset.to=i<SECTIONS.length-1?SECTIONS[i+1].id:"";
+    if(push){ try{history.replaceState(null,"","#"+SECTIONS[i].id)}catch(e){} }
+    var m=SECTIONS[i].querySelector(".meta");
+    document.getElementById("prog-t").textContent=(i+1)+" / "+SECTIONS.length+(m?"  ·  "+m.textContent:"");
+    document.getElementById("prog-bar").style.width=Math.round((i+1)/SECTIONS.length*100)+"%";
+    var on=LINKS[i]; if(on&&on.scrollIntoView&&window.innerWidth<=820){ on.scrollIntoView({block:"nearest",inline:"center"}); }
+    window.scrollTo({top:0});
+  }
+  LINKS.forEach(function(a){a.addEventListener("click",function(e){e.preventDefault();show(a.getAttribute("href").slice(1),true)})});
+  prev.addEventListener("click",function(){show(prev.dataset.to,true)});
+  next.addEventListener("click",function(){show(next.dataset.to,true)});
+  window.addEventListener("hashchange",function(){show(location.hash.slice(1),false)});
+  show(location.hash.slice(1),false);
+  document.addEventListener("keydown",function(e){
+    if(e.altKey||e.ctrlKey||e.metaKey) return;
+    if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
+    if(e.key==="ArrowRight"&&next.dataset.to) show(next.dataset.to,true);
+    if(e.key==="ArrowLeft"&&prev.dataset.to) show(prev.dataset.to,true);
+  });
+
+  /* ---------- 글자 크게 · 인쇄 ---------- */
+  var big=document.getElementById("t-big");
+  function setBig(on){ document.documentElement.classList.toggle("big",on); big.setAttribute("aria-pressed",on?"true":"false"); try{localStorage.setItem("eh-big",on?"1":"0")}catch(e){} }
+  try{ if(localStorage.getItem("eh-big")==="1") setBig(true); }catch(e){}
+  big.addEventListener("click",function(){ setBig(!document.documentElement.classList.contains("big")); });
+  document.getElementById("t-print").addEventListener("click",function(){ window.print(); });
+
+  /* ---------- 복사 ---------- */
+  function copyFrom(btn){
+    var el=document.getElementById(btn.dataset.target); var txt=el.textContent;
+    function ok(msg){ btn.textContent=msg; btn.classList.add("done"); setTimeout(function(){btn.textContent="복사";btn.classList.remove("done")},1600); }
+    function fallback(){ var r=document.createRange(); r.selectNodeContents(el); var s=getSelection(); s.removeAllRanges(); s.addRange(r); ok("선택했습니다 · Ctrl+C"); }
+    function legacy(){ var ta=document.createElement("textarea"); ta.value=txt; ta.setAttribute("readonly",""); ta.style.position="fixed"; ta.style.top="0"; ta.style.opacity="0"; document.body.appendChild(ta); ta.select(); var done=false; try{ done=document.execCommand("copy"); }catch(e){} document.body.removeChild(ta); if(done) ok("복사했습니다"); else fallback(); }
+    if(navigator.clipboard&&window.isSecureContext){ navigator.clipboard.writeText(txt).then(function(){ok("복사했습니다")},legacy); } else legacy();
+  }
+  document.addEventListener("click",function(e){ var b=e.target.closest("button.copy"); if(b) copyFrom(b); });
+
+  /* ---------- 프롬프트 작업대 ---------- */
+  var APPS=[
+    {id:"bus",name:"버스 승하차 연습",title:"김해은혜학교 학생들이 버스 타기를 연습할 수 있는 웹앱",
+     steps:["정류장에서 도착 안내판을 보고 기다리기","버스 번호를 확인하고 앞문으로 타기","교통카드 찍기","하차벨을 누르고 뒷문으로 내리기","다른 버스로 갈아타기"],
+     extra:"실제 김해 시내버스 노선을 쓸 거야. 첨부한 지도에 있는 정류장 이름과 버스 번호만 사용하고, 지도에 없는 번호나 정류장은 새로 만들지 마.\n- 타는 정류장: [정류장 이름] / 처음 탈 버스: [버스 번호]\n- 내릴 정류장: [정류장 이름]"},
+    {id:"kiosk",name:"패스트푸드점 키오스크 주문",title:"특수학교 학생들이 패스트푸드점 키오스크 주문을 연습할 수 있는 웹앱",
+     steps:["매장에서 먹기와 포장하기 고르기","메뉴 분류 고르기","단품과 세트 고르고 음료와 사이드 고르기","장바구니에서 수량 바꾸기와 메뉴 빼기","카드 결제하기","주문 번호를 받고 기다리기"],
+     extra:"선생님이 \"불고기버거 세트 하나, 음료는 콜라\"처럼 주문 미션을 정해 줄 수 있게 하고, 학생이 주문을 마치면 미션과 같은지 확인해 줘."},
+    {id:"cafe",name:"카페 음료 주문",title:"특수학교 학생들이 카페에서 음료 주문을 연습할 수 있는 웹앱",
+     steps:["메뉴판에서 음료 고르기","따뜻한 음료와 차가운 음료 고르기","컵 크기 고르기","결제하기","진동벨을 받고 울리면 음료 받으러 가기"],
+     extra:"메뉴는 아이스티, 핫초코, 딸기스무디처럼 학생들이 자주 고르는 음료로 해 줘."},
+    {id:"custom",name:"직접 정하기",title:"",steps:[],extra:""}
+  ];
+  var SUP=[
+    {id:"tts",label:"소리로 읽어 주기",on:true,text:"스피커 버튼을 누르면 안내 문장을 소리로 읽어 줘."},
+    {id:"pic",label:"그림 함께 보여 주기",on:true,text:"모든 안내와 버튼에 그림을 함께 보여 줘."},
+    {id:"praise",label:"칭찬과 효과음",on:true,text:"단계를 마칠 때마다 칭찬 문구와 효과음을 들려줘."},
+    {id:"retry",label:"부드러운 오답 안내",on:true,text:"틀린 버튼을 누르면 \"다시 해 볼까요?\"라고 안내하면서 맞는 버튼을 깜빡여 줘."},
+    {id:"help",label:"도움 모드",on:false,text:"도움 모드를 켜면 다음에 누를 버튼이 노란 테두리로 깜빡이게 해 줘."},
+    {id:"quiet",label:"소리 예민 학생 배려",on:false,text:"소리에 예민한 학생이 있으니 효과음은 작고 부드럽게 하고, 소리 끄기 버튼을 넣어 줘."},
+    {id:"teacher",label:"교사용 설정 화면",on:false,text:"선생님용 설정 화면에서 연습할 단계를 골라 해당 단계만 연습할 수 있게 해 줘."}
+  ];
+  var DEV=[{id:"board",label:"전자칠판",on:true},{id:"tab",label:"개인 태블릿",on:true},{id:"phone",label:"휴대전화",on:false}];
+  var LEVEL={mix:"글을 읽는 수준이 서로 달라. 글을 읽지 못하는 학생도 그림과 소리만으로 따라 할 수 있게 해 줘.",
+    none:"대부분 글을 거의 읽지 못해. 글자는 최소로 쓰고 그림과 소리로 안내해 줘.",
+    word:"낱말 정도는 읽을 수 있어. 안내는 두세 낱말로 짧게 쓰고 그림을 함께 보여 줘.",
+    sent:"짧은 문장은 읽을 수 있어. 한 문장에 한 가지 행동만 안내해 줘."};
+  var $=function(id){return document.getElementById(id)};
+  var appSel=$("b-app"), custom=$("b-custom");
+  APPS.forEach(function(a){var o=document.createElement("option");o.value=a.id;o.textContent=a.name;appSel.appendChild(o)});
+  function boxes(host,list,prefix){ host.innerHTML=""; list.forEach(function(it,i){ var id=prefix+i; var l=document.createElement("label"); l.innerHTML='<input type="checkbox" id="'+id+'"'+(it.on!==false?" checked":"")+'> '+(it.label||it); host.appendChild(l); }); }
+  function drawSteps(){ var a=APPS.filter(function(x){return x.id===appSel.value})[0]; custom.hidden=(a.id!=="custom");
+    var h=$("b-steps"); if(a.id==="custom"){ h.innerHTML='<span class="why" style="font-size:13.5px">직접 정하기를 고르면 단계는 AI가 제안하도록 요청합니다.</span>'; } else boxes(h,a.steps,"st"); }
+  boxes($("b-sup"),SUP,"sp"); boxes($("b-dev"),DEV,"dv"); drawSteps();
+  function render(){
+    var a=APPS.filter(function(x){return x.id===appSel.value})[0];
+    if(a.id!=="custom" && document.querySelectorAll("#b-steps input").length!==a.steps.length) drawSteps();
+    var title=a.id==="custom" ? "특수학교 학생들이 생활 기능을 연습할 수 있는 웹앱" : a.title;
+    var out=title+"을 HTML, CSS, JavaScript로 만들어 줘.\n\n";
+    if(a.id==="custom") out+="[연습할 상황]\n"+(custom.value.trim()||"편의점에서 물건을 골라 계산하기")+"\n\n";
+    out+="[사용하는 학생]\n특수학교 학생들이고, "+LEVEL[$("b-level").value]+"\n\n[연습 단계]\n";
+    if(a.id==="custom"){ out+="실제 생활에서 이 일을 할 때의 순서를 4~6단계로 나누어 연습할 수 있게 해 줘.\n"; }
+    else { var n=0; a.steps.forEach(function(s,i){ if($("st"+i).checked){ n++; out+=n+". "+s+"\n"; } }); if(!n) out+="(연습할 단계를 하나 이상 골라 주세요)\n"; }
+    if(a.extra) out+="\n[조건]\n"+a.extra+"\n";
+    var sup=SUP.filter(function(s,i){return $("sp"+i).checked}).map(function(s){return "- "+s.text});
+    if(sup.length) out+="\n[지원 기능]\n"+sup.join("\n")+"\n";
+    var dev=DEV.filter(function(d,i){return $("dv"+i).checked}).map(function(d){return d.label});
+    if(dev.length) out+="\n[기기]\n"+dev.join(", ")+"에서 쓸 거야. 손가락으로 누르기 쉽게 버튼을 크게 만들고, 가로 화면과 세로 화면에서 모두 깨지지 않게 해 줘.";
+    $("b-out").textContent=out.trim();
+  }
+  appSel.addEventListener("change",function(){drawSteps();render()});
+  $("builder").addEventListener("change",render); $("builder").addEventListener("input",render);
+  render();
+})();
+</script>
+
+</body>
+</html>
