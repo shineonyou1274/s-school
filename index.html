@@ -6,7 +6,7 @@
 <title>은혜학교 AI 실습 연수</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" media="print" onload="this.media='all'" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+KR:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
 <style>
 /* 레이아웃: 좌측 노선도형 목차(정류장 점) + 우측 한 절만 보이는 본문. 정류장 표지판의 남색과 하차벨 노랑을 기준색으로 쓴다 */
 :root{
@@ -141,6 +141,88 @@ mark.fill{background:var(--accent-soft);color:inherit;border-bottom:2px solid va
 @media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 </style>
 
+<style id="ss-records-style">
+/* 개인 기록: 외부 통신 없는 브라우저 저장 */
+.ss-studybar{max-width:860px;display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:-4px 0 8px;padding:12px 14px;background:var(--accent-soft);border:1px solid var(--accent);border-radius:12px}
+.ss-studybar button,.ss-records button,.ss-confirm button,.ss-cele button{font:600 14px/1.45 var(--f-body);cursor:pointer;border-radius:8px;border:1px solid var(--line);padding:9px 12px;background:var(--paper);color:var(--ink);min-height:42px}
+.ss-studybar button:focus-visible,.ss-records button:focus-visible,.ss-records select:focus-visible,.ss-records textarea:focus-visible,.ss-confirm button:focus-visible,.ss-cele button:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+.ss-studybar button[aria-pressed=true]{background:var(--rail);border-color:var(--rail);color:#fff}
+.ss-studybar #ss-done[aria-pressed=true]{background:#166345;border-color:#166345;color:white}
+.ss-count{font:600 12px var(--f-mono);margin-left:auto;color:var(--muted)}
+.ss-local-hint{max-width:860px;margin:0 0 22px;color:var(--muted);font-size:12.5px;line-height:1.6}
+.ss-local-hint.ss-unsaved{color:var(--warn);font-weight:600}
+.rail nav a.ss-complete::after{background:#65c99b;border-color:#65c99b}
+.rail nav a.ss-complete.on::after{box-shadow:0 0 0 3px rgba(242,183,5,.55)}
+.ss-nav-mark{position:absolute;right:9px;top:8px;width:9px;height:14px;background:var(--accent);clip-path:polygon(0 0,100% 0,100% 100%,50% 72%,0 100%)}
+.rail nav a.ss-bookmarked{padding-right:25px}
+dialog.ss-records,dialog.ss-confirm,dialog.ss-cele{border:1px solid var(--line);background:var(--paper);color:var(--ink);font-family:var(--f-body);box-shadow:0 18px 80px #0004}
+dialog.ss-records{position:fixed;inset:0 0 0 auto;margin:0;width:min(440px,100%);height:100dvh;max-height:100dvh;max-width:100%;border-radius:16px 0 0 16px;padding:0;overflow:hidden}
+dialog.ss-records::backdrop{background:rgba(15,24,40,.24)}
+.ss-records-inner{height:100%;overflow:auto;overscroll-behavior:contain;padding:20px;display:flex;flex-direction:column;gap:14px}
+.ss-panel-head{display:flex;align-items:center;gap:10px;justify-content:space-between}
+.ss-panel-head h2{font-size:21px;margin:0;line-height:1.4}
+.ss-panel-head button{flex:none}
+.ss-summary{padding:12px 14px;background:var(--blue-soft);border-radius:10px;color:var(--blue);font-size:13px;line-height:1.7}
+.ss-section-label{font-size:12px;font-weight:600;color:var(--muted);display:block;margin-bottom:5px}
+.ss-records select{width:100%;padding:10px 8px;border:1px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);font:14px var(--f-body)}
+.ss-tabs{display:flex;gap:5px;flex-wrap:wrap}
+.ss-tabs button{flex:1;padding:9px 7px}
+.ss-tabs button[aria-selected=true]{background:var(--rail);color:white;border-color:var(--rail)}
+.ss-tabpane[hidden]{display:none!important}
+.ss-note-label{font-size:13px;font-weight:600;display:block;margin-bottom:7px}
+.ss-records textarea{width:100%;min-height:220px;resize:vertical;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:13px;font:15px/1.8 var(--f-body)}
+.ss-note-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;color:var(--muted);font-size:11.5px;margin-top:4px}
+#ss-save-status.ss-error{color:var(--warn);font-weight:700}
+.ss-pen-tools{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-bottom:8px}
+.ss-pen-tools button{padding:7px 9px;min-height:38px;font-size:12px}
+.ss-pen-tools button[aria-pressed=true]{outline:2px solid var(--blue);outline-offset:1px}
+.ss-swatch{width:30px;min-width:30px;min-height:30px!important;padding:0!important;border-radius:50%!important;border:3px solid white!important;box-shadow:0 0 0 1px #bcc4d0}
+.ss-ink-pad{position:relative;width:100%;aspect-ratio:10/7;background:#fff;border:1px solid #c8d0dc;border-radius:10px;overflow:hidden}
+#ss-ink{display:block;width:100%;height:100%;touch-action:none;cursor:crosshair;background:transparent}
+.ss-small{font-size:12px;line-height:1.65;color:var(--muted);margin:6px 0 0}
+.ss-record-list{display:grid;gap:8px;margin:8px 0 20px}
+.ss-record-item{display:flex;align-items:stretch;gap:5px}
+.ss-record-item .ss-goto{flex:1;text-align:left;font-weight:500;overflow:hidden;word-break:keep-all}
+.ss-record-item .ss-goto small{display:block;font-size:11px;font-weight:400;color:var(--muted);white-space:pre-wrap;margin-top:5px}
+.ss-record-item .ss-remove{font-size:11px;align-self:center;flex:none;padding:7px}
+.ss-records h3{font-size:16px;margin:10px 0 5px}
+.ss-records h4{font-size:13px;margin:15px 0 6px;color:var(--muted)}
+.ss-done-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px}
+.ss-done-grid button{padding:8px 2px;font-size:12px}
+.ss-done-grid button.ss-checked{background:#dff5e9;color:#145b3d;border-color:#79b995}
+.ss-empty{padding:14px;background:var(--bg);border-radius:8px;color:var(--muted);font-size:13px}
+.ss-records details{border-top:1px solid var(--line);padding-top:12px;margin-top:6px}
+.ss-records summary{cursor:pointer;font-size:13px;font-weight:600;padding:5px 0}
+.ss-management{display:grid;gap:8px;margin-top:10px}
+.ss-management button{text-align:left}
+.ss-records .ss-danger{color:var(--warn);border-color:var(--warn);margin-top:10px}
+#ss-toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);max-width:min(90vw,560px);padding:12px 18px;border-radius:10px;background:#14233d;color:white;box-shadow:0 6px 24px #0003;font:14px/1.6 var(--f-body);z-index:2000;text-align:center}
+#ss-toast[hidden]{display:none}
+dialog.ss-confirm{width:min(420px,calc(100vw - 28px));border-radius:16px;padding:24px}
+dialog.ss-confirm::backdrop,dialog.ss-cele::backdrop{background:#10213b66}
+.ss-confirm h2{font-size:20px;margin:0 0 10px}
+.ss-confirm p{font-size:14px;line-height:1.8;white-space:pre-wrap}
+.ss-confirm-actions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}
+.ss-confirm .ss-primary,.ss-cele .ss-primary{background:var(--rail);color:white;border-color:var(--rail)}
+dialog.ss-cele{width:min(440px,calc(100vw - 30px));border-radius:22px;padding:30px;text-align:center;overflow:visible}
+.ss-cele-badge{display:inline-flex;align-items:center;justify-content:center;width:76px;height:76px;border-radius:50%;background:#f2b705;color:#3a2c00;font:700 27px var(--f-mono);box-shadow:0 0 0 10px var(--accent-soft);margin:8px 0 16px}
+.ss-cele h2{font-size:23px;line-height:1.45;margin:8px 0 10px}
+.ss-cele p{color:var(--muted);font-size:14px;line-height:1.8;margin:0 0 24px}
+.ss-confetti{position:absolute;inset:-80px -20px auto;height:100px;pointer-events:none;overflow:visible;z-index:1}
+.ss-confetti i{position:absolute;left:50%;top:30px;width:8px;height:12px;border-radius:2px;opacity:0;animation:ss-party 1250ms ease-out forwards;animation-delay:var(--delay)}
+@keyframes ss-party{0%{opacity:1;transform:translate(0,0) rotate(0)}85%{opacity:1}100%{opacity:0;transform:translate(var(--x),var(--y)) rotate(var(--rot))}}
+@media (prefers-reduced-motion:reduce){.ss-confetti{display:none}.ss-cele *{animation:none!important;transition:none!important}}
+@media(min-width:1200px){body.ss-records-open .shell{margin-right:420px}dialog.ss-records{width:420px}dialog.ss-records::backdrop{background:transparent}}
+@media(max-width:820px){.ss-studybar{padding:10px;gap:6px}.ss-studybar button{padding:9px 10px;font-size:13px}.ss-count{font-size:11px}.ss-local-hint{font-size:11.5px}.ss-nav-mark{top:7px;right:6px}.ss-records-inner{padding:17px}.ss-records textarea{font-size:16px}.ss-records select{font-size:16px}}
+#ss-printout{display:none}
+@media print{.ss-studybar,.ss-local-hint,.ss-records,.ss-confirm,.ss-cele,#ss-toast{display:none!important}body.ss-records-open .shell{margin-right:0}body.ss-print-records .shell{display:none!important}body.ss-print-records #ss-printout{display:block!important;color:#152030;font:12pt/1.7 sans-serif}#ss-printout h1{font-size:22pt}#ss-printout h2{font-size:16pt;margin-top:24pt;border-bottom:2px solid #e0ad2a;padding-bottom:6pt}#ss-printout p{white-space:pre-wrap;overflow-wrap:anywhere}#ss-printout img,#ss-printout canvas{max-width:100%;border:1px solid #ccd1d9;break-inside:avoid}#ss-printout article{break-inside:avoid}}
+
+.ss-studybar button,.ss-records button{min-height:44px}.ss-pen-tools button{min-width:44px;min-height:44px!important}.ss-swatch{width:44px;min-width:44px;min-height:44px!important}.big .ss-records textarea,.big .ss-records select{font-size:19px}.big .ss-records button{font-size:16px}.big .ss-summary,.big .ss-note-label{font-size:15px}.big .ss-small,.big .ss-note-foot{font-size:13px}
+@media(max-width:820px){main section{scroll-margin-top:100px}}
+
+@media(max-width:820px){.ss-studybar{scroll-margin-top:82px}}
+
+</style>
 </head>
 <body>
 <div class="shell">
@@ -180,7 +262,7 @@ mark.fill{background:var(--accent-soft);color:inherit;border-bottom:2px solid va
 <header class="head">
   <div class="k">김해은혜학교 교원 연수 · 거창고등학교 손평화</div>
   <h1>수업 도구를 직접 만들고, 행동지원 자료를 정리하고, 체험학습을 계획하는 AI 실습</h1>
-  <p>왼쪽 목차에서 번호를 누르면 해당 단계만 화면에 나타납니다. 키보드의 ← → 키로도 넘길 수 있습니다. 프롬프트는 복사 버튼으로 가져다 쓰고, 노란색으로 표시된 [ ] 칸만 우리 학교 정보로 바꾸면 됩니다.</p>
+  <p>목차에서 번호를 누르면 해당 단계만 화면에 나타납니다. 키보드의 ← → 키로도 넘길 수 있습니다. 프롬프트는 복사 버튼으로 가져다 쓰고, 노란색으로 표시된 [ ] 칸만 우리 학교 정보로 바꾸면 됩니다.</p>
   <div class="tools"><span id="prog-t"></span><button type="button" id="t-big" aria-pressed="false">글자 크게</button><button type="button" id="t-print">전체 인쇄</button></div>
   <div class="prog" aria-hidden="true"><i id="prog-bar"></i></div>
 </header>
@@ -637,7 +719,8 @@ mark.fill{background:var(--accent-soft);color:inherit;border-bottom:2px solid va
     document.getElementById("prog-t").textContent=(i+1)+" / "+SECTIONS.length+(m?"  ·  "+m.textContent:"");
     document.getElementById("prog-bar").style.width=Math.round((i+1)/SECTIONS.length*100)+"%";
     var on=LINKS[i]; if(on&&on.scrollIntoView&&window.innerWidth<=820){ on.scrollIntoView({block:"nearest",inline:"center"}); }
-    window.scrollTo({top:0});
+    if(window.innerWidth<=820&&i>0){(document.getElementById("ss-studybar")||SECTIONS[i]).scrollIntoView({block:"start"})}else window.scrollTo({top:0});
+    window.dispatchEvent(new CustomEvent("s-school:section",{detail:{id:SECTIONS[i].id}}));
   }
   LINKS.forEach(function(a){a.addEventListener("click",function(e){e.preventDefault();show(a.getAttribute("href").slice(1),true)})});
   prev.addEventListener("click",function(){show(prev.dataset.to,true)});
@@ -645,7 +728,7 @@ mark.fill{background:var(--accent-soft);color:inherit;border-bottom:2px solid va
   window.addEventListener("hashchange",function(){show(location.hash.slice(1),false)});
   show(location.hash.slice(1),false);
   document.addEventListener("keydown",function(e){
-    if(e.altKey||e.ctrlKey||e.metaKey) return;
+    if(e.defaultPrevented||e.altKey||e.ctrlKey||e.metaKey||document.querySelector("dialog[open]")) return;
     if(/INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return;
     if(e.key==="ArrowRight"&&next.dataset.to) show(next.dataset.to,true);
     if(e.key==="ArrowLeft"&&prev.dataset.to) show(prev.dataset.to,true);
@@ -724,5 +807,122 @@ mark.fill{background:var(--accent-soft);color:inherit;border-bottom:2px solid va
 })();
 </script>
 
+<script id="ss-records-script">
+(function(){
+'use strict';
+var KEY='s-school-records-v1', FORMAT='s-school-personal-records', MAXNOTE=20000, MAXPOINTS=60000;
+var sections=Array.from(document.querySelectorAll('main section')), ids=sections.map(function(s){return s.id}), lessons=ids.filter(function(id){return /^[vna][1-5]$/.test(id)});
+var groups=[{key:'part1',prefix:'v',name:'1부 바이브코딩',message:'직접 만든 연습 앱을 다음 수업에 연결해 보세요.'},{key:'part2',prefix:'n',name:'2부 노트북LM',message:'AI의 답을 원래 기록과 대조한 경험을 기억해 두세요.'},{key:'part3',prefix:'a',name:'3부 AI 에이전트',message:'오늘 만든 계획을 우리 학교의 실제 조건에 맞춰 다듬어 보세요.'}];
+function el(tag,cls,text){var x=document.createElement(tag);if(cls)x.className=cls;if(text!==undefined)x.textContent=text;return x}
+function btn(text,cls,fn){var b=el('button',cls,text);b.type='button';if(fn)b.addEventListener('click',fn);return b}
+function title(id){var h=document.querySelector('main section#'+id+' h2');return h?h.textContent.replace(/\s+/g,' ').trim().replace(/^([123]-[1-5]|00|Q|↗)\s*/,'$1 '):id}
+function blank(){return {version:1,notes:{},ink:{},bookmarks:[],done:[],seen:[],last:'intro',updated:null,generation:'0'}}
+var COLORS=['#20324c','#2457a6','#a84220','#6740a5'];
+function normalize(raw){
+ if(!raw||raw.version!==1||typeof raw!=='object')throw new Error('이 연수자료의 기록 파일이 아닙니다.');
+ var out=blank(), total=0;
+ ids.forEach(function(id){
+  if(raw.notes&&typeof raw.notes[id]==='string'){if(raw.notes[id].length>MAXNOTE)throw new Error('메모가 허용 길이를 넘었습니다.');if(raw.notes[id].trim())out.notes[id]=raw.notes[id];}
+  if(raw.ink&&Array.isArray(raw.ink[id])){
+   if(raw.ink[id].length>120)throw new Error('손필기 선이 너무 많습니다.');
+   var list=raw.ink[id].map(function(st){
+    if(!st||!Array.isArray(st.points)||st.points.length<1||st.points.length>1200||!COLORS.includes(st.color)||!['pen','erase'].includes(st.tool))throw new Error('손필기 데이터 형식이 맞지 않습니다.');
+    var pts=st.points.map(function(p){if(!Array.isArray(p)||p.length!==2||!p.every(function(v){return typeof v==='number'&&Number.isFinite(v)&&v>=0&&v<=1}))throw new Error('손필기 좌표가 맞지 않습니다.');total++;if(total>MAXPOINTS)throw new Error('손필기 데이터가 너무 큽니다.');return [p[0],p[1]];});
+    return {tool:st.tool,color:st.color,points:pts};
+   });if(list.length)out.ink[id]=list;
+  }
+ });
+ ['bookmarks','done'].forEach(function(k){if(raw[k]!==undefined&&!Array.isArray(raw[k]))throw new Error('기록 목록 형식이 맞지 않습니다.');out[k]=Array.from(new Set((raw[k]||[]).filter(function(id){return (k==='done'?lessons:ids).includes(id)})));});
+ out.seen=Array.isArray(raw.seen)?Array.from(new Set(raw.seen.filter(function(v){return ['part1','part2','part3','all'].includes(v)}))):[];
+ out.last=ids.includes(raw.last)?raw.last:'intro';out.generation=typeof raw.generation==='string'?raw.generation:'0';return out;
+}
+var pending={notes:new Set(),ink:new Set(),bookmarks:new Set(),done:new Set()}, replacePending=false;
+function clearPending(){Object.keys(pending).forEach(function(k){pending[k].clear()})}
+function newGeneration(){return Date.now().toString(36)+'-'+Math.random().toString(36).slice(2)}
+function mergeRecords(latest,local){['notes','ink'].forEach(function(k){pending[k].forEach(function(id){if(Object.prototype.hasOwnProperty.call(local[k],id))latest[k][id]=local[k][id];else delete latest[k][id]})});['bookmarks','done'].forEach(function(k){pending[k].forEach(function(id){var p=latest[k].indexOf(id),yes=local[k].includes(id);if(yes&&p<0)latest[k].push(id);if(!yes&&p>=0)latest[k].splice(p,1)})});latest.seen=Array.from(new Set(latest.seen.concat(local.seen)));return latest}
+var state=blank(), storageError='', loaded=false;
+try{var raw=localStorage.getItem(KEY);if(raw){state=normalize(JSON.parse(raw));loaded=true;}}catch(e){storageError='브라우저 저장을 사용할 수 없습니다. 기록 파일을 내려받아 보관하세요.'}
+var current=(sections.find(function(s){return !s.hidden})||sections[0]).id, saveTimer=null, toastTimer=null, drawRaf=0, currentStroke=null, activePointer=null, color=COLORS[0], tool='pen', tab='memo';
+var toolbar=el('div','ss-studybar');toolbar.id='ss-studybar';toolbar.setAttribute('role','group');toolbar.setAttribute('aria-label','현재 단계의 내 기록');
+var bookmark=btn('책갈피',null,function(){toggleBookmark(current)});bookmark.id='ss-bookmark';bookmark.setAttribute('aria-pressed','false');
+var noteOpen=btn('필기',null,function(){openRecords(hasInk(current)&&!(state.notes[current]||'').trim()?'ink':'memo')});noteOpen.id='ss-open-note';
+var complete=btn('실습 완료',null,toggleDone);complete.id='ss-done';complete.setAttribute('aria-pressed','false');
+var count=el('span','ss-count');count.id='ss-count';toolbar.append(bookmark,noteOpen,complete,count);
+var head=document.querySelector('main .head');head.insertAdjacentElement('afterend',toolbar);
+var hint=el('p','ss-local-hint','내 기록은 이 브라우저에만 저장됩니다.');hint.id='ss-local-hint';toolbar.insertAdjacentElement('afterend',hint);
+var recordsOpen=btn('내 기록',null,function(){openRecords('collection')});recordsOpen.id='ss-open-records';head.querySelector('.tools').appendChild(recordsOpen);
+var toast=el('div');toast.id='ss-toast';toast.hidden=true;toast.setAttribute('role','status');toast.setAttribute('aria-live','polite');document.body.appendChild(toast);
+function say(text){var host=dialog&&dialog.open?dialog:document.body;if(toast.parentElement!==host)host.appendChild(toast);toast.textContent=text;toast.hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(function(){toast.hidden=true},3300)}
+var dialog=el('dialog','ss-records');dialog.id='ss-records';dialog.setAttribute('aria-labelledby','ss-records-title');
+dialog.innerHTML='<div class="ss-records-inner"><div class="ss-panel-head"><h2 id="ss-records-title">내 기록</h2><button type="button" id="ss-records-close" aria-label="내 기록 닫기">닫기</button></div><div class="ss-summary" id="ss-summary"></div><div><label class="ss-section-label" for="ss-note-section">기록할 단계</label><select id="ss-note-section"></select></div><div class="ss-tabs" role="tablist" aria-label="기록 종류"><button type="button" role="tab" id="ss-tab-memo" aria-controls="ss-pane-memo" data-ss-tab="memo" aria-selected="true">메모</button><button type="button" role="tab" id="ss-tab-ink" aria-controls="ss-pane-ink" data-ss-tab="ink" aria-selected="false" tabindex="-1">손필기</button><button type="button" role="tab" id="ss-tab-collection" aria-controls="ss-pane-collection" data-ss-tab="collection" aria-selected="false" tabindex="-1">모아보기</button></div><div class="ss-tabpane" role="tabpanel" id="ss-pane-memo" aria-labelledby="ss-tab-memo"><label class="ss-note-label" for="ss-note">기억할 내용이나 내 수업에 적용할 점</label><textarea id="ss-note" maxlength="20000" placeholder="이 단계에서 남기고 싶은 내용을 적어 보세요."></textarea><div class="ss-note-foot"><span id="ss-save-status" role="status" aria-live="polite">자동 저장</span><span id="ss-note-count">0 / 20,000</span></div></div><div class="ss-tabpane" role="tabpanel" id="ss-pane-ink" aria-labelledby="ss-tab-ink" hidden><div class="ss-pen-tools" id="ss-pen-tools"><button type="button" id="ss-pen" aria-pressed="true">펜</button><button type="button" id="ss-eraser" aria-pressed="false">지우개</button><button type="button" id="ss-undo">되돌리기</button><button type="button" id="ss-clear-ink">이 필기 지우기</button></div><div class="ss-ink-pad"><canvas id="ss-ink" aria-label="이 단계의 손필기 영역. 펜이나 손가락으로 그릴 수 있습니다.">손필기가 지원되지 않으면 메모 탭에 내용을 적어 주세요.</canvas></div><p class="ss-small">펜·손가락·마우스로 쓸 수 있어요. 페이지를 바꿔도 필기는 남습니다.</p></div><div class="ss-tabpane" role="tabpanel" id="ss-pane-collection" aria-labelledby="ss-tab-collection" hidden></div><details><summary>기록 백업과 관리</summary><div class="ss-management"><button type="button" id="ss-export">기록 내려받기</button><button type="button" id="ss-import">기록 불러오기</button><button type="button" id="ss-print">내 기록 인쇄</button><p class="ss-small">서버 전송이나 기기 간 자동 동기화는 없습니다. 브라우저 데이터를 지우기 전에는 기록 파일을 내려받으세요.</p><p class="ss-small">학생 실명 등 민감한 정보는 적지 마세요. 공용 PC에서는 사용 후 아래 버튼으로 기록을 지우세요.</p><button type="button" id="ss-clear-all" class="ss-danger">이 브라우저의 내 기록 지우기</button></div></details><input id="ss-import-file" type="file" accept="application/json,.json" hidden></div>';
+document.body.appendChild(dialog);
+var $=function(id){return document.getElementById(id)}, note=$('ss-note'), status=$('ss-save-status'), select=$('ss-note-section'), canvas=$('ss-ink'), ctx=canvas.getContext('2d'), collection=$('ss-pane-collection');
+ids.forEach(function(id){var option=el('option',null,title(id));option.value=id;select.appendChild(option)});
+var confirmDialog=el('dialog','ss-confirm');confirmDialog.id='ss-confirm';confirmDialog.setAttribute('aria-labelledby','ss-confirm-title');confirmDialog.innerHTML='<h2 id="ss-confirm-title"></h2><p id="ss-confirm-text"></p><div class="ss-confirm-actions"><button type="button" id="ss-confirm-cancel">취소</button><button type="button" id="ss-confirm-ok" class="ss-primary">확인</button></div>';document.body.appendChild(confirmDialog);var confirmAction=null;
+function ask(titleText,bodyText,okText,fn){$('ss-confirm-title').textContent=titleText;$('ss-confirm-text').textContent=bodyText;$('ss-confirm-ok').textContent=okText;confirmAction=fn;confirmDialog.showModal();$('ss-confirm-cancel').focus()}
+$('ss-confirm-cancel').onclick=function(){confirmAction=null;confirmDialog.close()};$('ss-confirm-ok').onclick=function(){var fn=confirmAction;confirmAction=null;confirmDialog.close();if(fn)fn()};confirmDialog.addEventListener('cancel',function(){confirmAction=null});
+var cele=el('dialog','ss-cele');cele.id='ss-celebration';cele.setAttribute('aria-labelledby','ss-cele-title');cele.innerHTML='<div class="ss-confetti" aria-hidden="true"></div><div class="ss-cele-badge" aria-hidden="true" id="ss-cele-badge"></div><h2 id="ss-cele-title"></h2><p id="ss-cele-text"></p><button type="button" id="ss-cele-close" class="ss-primary">계속하기</button>';document.body.appendChild(cele);$('ss-cele-close').onclick=function(){cele.close()};cele.addEventListener('close',function(){cele.querySelector('.ss-confetti').replaceChildren()});
+function celebrate(group,all){
+ if(cele.open||dialog.open||confirmDialog.open)return;
+ $('ss-cele-badge').textContent=all?'15/15':group.name.charAt(0)+'부';$('ss-cele-title').textContent=all?'오늘의 실습을 모두 마쳤어요':group.name+' 실습을 마쳤어요';$('ss-cele-text').textContent=all?'남긴 메모와 직접 만든 결과물을 내 수업에 연결해 보세요. 기록 파일도 내려받아 두면 좋습니다.':group.message;
+ var host=cele.querySelector('.ss-confetti');host.replaceChildren();if(!matchMedia('(prefers-reduced-motion: reduce)').matches){for(var i=0;i<38;i++){var bit=el('i');bit.style.background=['#f2b705','#2457a6','#5aac83','#d9745b','#936bb8'][i%5];bit.style.setProperty('--x',(Math.random()*420-210)+'px');bit.style.setProperty('--y',(130+Math.random()*280)+'px');bit.style.setProperty('--rot',(Math.random()*700-350)+'deg');bit.style.setProperty('--delay',(Math.random()*150)+'ms');host.appendChild(bit)}}cele.showModal();$('ss-cele-close').focus();
+}
+function saveNow(){
+ clearTimeout(saveTimer);saveTimer=null;try{var stored=localStorage.getItem(KEY),latest=stored&&!replacePending?normalize(JSON.parse(stored)):blank();if(!replacePending){if(latest.generation!==state.generation){state=latest;clearPending();currentStroke=null;activePointer=null;note.value=state.notes[current]||'';if(typeof printout!=='undefined'&&printout)printout.replaceChildren();render();scheduleDraw()}else state=mergeRecords(latest,state)}state.last=current;state.updated=new Date().toISOString();localStorage.setItem(KEY,JSON.stringify(state));clearPending();if(currentStroke)pending.ink.add(current);replacePending=false;storageError='';status.textContent='저장됨';status.classList.remove('ss-error');hint.textContent='내 기록은 이 브라우저에만 저장됩니다.';hint.classList.remove('ss-unsaved');return true}catch(e){storageError='브라우저 저장을 사용할 수 없습니다. 기록 파일을 내려받아 보관하세요.';status.textContent='저장되지 않음 · 기록 내려받기 필요';status.classList.add('ss-error');hint.textContent=storageError;hint.classList.add('ss-unsaved');return false}
+}
+function dirty(){status.textContent='저장 중';clearTimeout(saveTimer);saveTimer=setTimeout(function(){saveNow();render()},450)}
+function hasInk(id){return !!(state.ink[id]&&state.ink[id].some(function(s){return s.tool==='pen'}))}
+function updateNav(){document.querySelectorAll('#menu a').forEach(function(a){var id=a.getAttribute('href').slice(1),mark=a.querySelector('.ss-nav-mark'),on=state.bookmarks.includes(id);a.classList.toggle('ss-complete',state.done.includes(id));a.classList.toggle('ss-bookmarked',on);if(on&&!mark){mark=el('span','ss-nav-mark');mark.setAttribute('aria-hidden','true');a.insertBefore(mark,a.lastElementChild)}if(!on&&mark)mark.remove();a.setAttribute('aria-label',title(id)+(on?' · 책갈피':'')+(state.done.includes(id)?' · 완료':''))})}
+function render(){
+ bookmark.setAttribute('aria-pressed',state.bookmarks.includes(current)?'true':'false');bookmark.textContent=state.bookmarks.includes(current)?'책갈피됨':'책갈피';bookmark.setAttribute('aria-label',title(current)+' 책갈피 '+(state.bookmarks.includes(current)?'해제':'추가'));
+ noteOpen.textContent=((state.notes[current]||'').trim()||hasInk(current))?'필기 보기':'필기';complete.hidden=!lessons.includes(current);var done=state.done.includes(current);complete.textContent=done?'완료됨':'실습 완료';complete.setAttribute('aria-pressed',done?'true':'false');complete.title=done?'누르면 완료를 취소합니다':'이 단계의 실습을 마쳤을 때 눌러 주세요';count.textContent='완료 '+state.done.length+' / 15';
+ $('ss-summary').textContent='실습 '+state.done.length+'/15 완료 · 책갈피 '+state.bookmarks.length+'개 · 메모 '+Object.keys(state.notes).filter(function(k){return state.notes[k].trim()}).length+'개 · 손필기 '+ids.filter(hasInk).length+'곳';select.value=current;if(document.activeElement!==note)note.value=state.notes[current]||'';$('ss-note-count').textContent=note.value.length.toLocaleString()+' / 20,000';updateNav();if(dialog.open&&tab==='collection')renderCollection();if(dialog.open&&tab==='ink')scheduleDraw();
+}
+function toggleBookmark(id){pending.bookmarks.add(id);var at=state.bookmarks.indexOf(id);if(at<0){state.bookmarks.push(id);say('책갈피에 담았습니다.')}else{state.bookmarks.splice(at,1);say('책갈피를 해제했습니다.')}saveNow();render()}
+function toggleDone(){
+ if(!lessons.includes(current))return;pending.done.add(current);var at=state.done.indexOf(current);if(at>=0){state.done.splice(at,1);saveNow();render();return}
+ state.done.push(current);var group=groups.find(function(g){return current.charAt(0)===g.prefix}),finished=lessons.filter(function(id){return id.charAt(0)===group.prefix}).every(function(id){return state.done.includes(id)}),all=state.done.length===15,show=false;
+ if(finished&&!state.seen.includes(group.key)){state.seen.push(group.key);show=true}if(all&&!state.seen.includes('all')){state.seen.push('all');show=true}saveNow();render();if(show)celebrate(group,all);else say('실습 완료를 기록했습니다.');
+}
+function go(id,close){if(!ids.includes(id))return;saveNow();if(close&&dialog.open)dialog.close();var a=document.querySelector('#menu a[href="#'+id+'"]');if(a)a.click()}
+function onSection(id){if(!ids.includes(id))return;if(currentStroke)endStroke();if(saveTimer)saveNow();current=id;state.last=id;note.value=state.notes[id]||'';render();saveNow()}
+window.addEventListener('s-school:section',function(e){onSection(e.detail.id)});
+function setTab(which,focus){tab=which;['memo','ink','collection'].forEach(function(k){$('ss-pane-'+k).hidden=k!==which;var b=$('ss-tab-'+k);b.setAttribute('aria-selected',k===which?'true':'false');b.tabIndex=k===which?0:-1});if(which==='collection')renderCollection();if(which==='ink')scheduleDraw();if(focus)$('ss-tab-'+which).focus()}
+function openRecords(which){render();setTab(which,false);if(!dialog.open){dialog.showModal();document.body.classList.add('ss-records-open')}if(which==='memo')note.focus();else $('ss-tab-'+which).focus();if(which==='ink')scheduleDraw()}
+$('ss-records-close').onclick=function(){dialog.close()};dialog.addEventListener('close',function(){endStroke();saveNow();document.body.classList.remove('ss-records-open')});dialog.addEventListener('cancel',function(){endStroke();saveNow()});select.addEventListener('change',function(){go(select.value,false)});
+Array.from(dialog.querySelectorAll('[data-ss-tab]')).forEach(function(b){b.addEventListener('click',function(){setTab(b.dataset.ssTab,true)});b.addEventListener('keydown',function(e){var keys=['memo','ink','collection'],i=keys.indexOf(b.dataset.ssTab);if(['ArrowRight','ArrowLeft','Home','End'].includes(e.key)){e.preventDefault();e.stopPropagation();var next=e.key==='Home'?0:e.key==='End'?2:(i+(e.key==='ArrowRight'?1:2))%3;setTab(keys[next],true)}})});
+note.addEventListener('input',function(){pending.notes.add(current);var value=note.value;if(value.trim())state.notes[current]=value;else delete state.notes[current];$('ss-note-count').textContent=value.length.toLocaleString()+' / 20,000';dirty()});note.addEventListener('blur',function(){saveNow();render()});
+function recordItem(id,preview,removable){var row=el('div','ss-record-item'),b=btn(title(id),'ss-goto',function(){go(id,true)});if(preview)b.appendChild(el('small',null,preview));row.appendChild(b);if(removable){var rm=btn('해제','ss-remove',function(){toggleBookmark(id);renderCollection();var focus=collection.querySelector('.ss-remove')||$('ss-tab-collection');focus.focus()});rm.setAttribute('aria-label',title(id)+' 책갈피 해제');row.appendChild(rm)}return row}
+function renderCollection(){
+ collection.replaceChildren();collection.appendChild(el('h3',null,'책갈피'));var bm=el('div','ss-record-list');ids.filter(function(id){return state.bookmarks.includes(id)}).forEach(function(id){bm.appendChild(recordItem(id,'',true))});if(!bm.children.length)bm.appendChild(el('p','ss-empty','각 단계의 책갈피 버튼을 누르면 여기에 모입니다.'));collection.appendChild(bm);
+ collection.appendChild(el('h3',null,'필기한 단계'));var ns=el('div','ss-record-list');ids.filter(function(id){return !!(state.notes[id]&&state.notes[id].trim())||hasInk(id)}).forEach(function(id){var preview=(state.notes[id]||'').trim().slice(0,130)+(hasInk(id)?' · 손필기 있음':'');ns.appendChild(recordItem(id,preview,false))});if(!ns.children.length)ns.appendChild(el('p','ss-empty','메모나 손필기를 남기면 이곳에서 다시 찾을 수 있습니다.'));collection.appendChild(ns);
+ collection.appendChild(el('h3',null,'실습 완료'));groups.forEach(function(g){var list=lessons.filter(function(id){return id.charAt(0)===g.prefix}),amount=list.filter(function(id){return state.done.includes(id)}).length;collection.appendChild(el('h4',null,g.name+' · '+amount+'/5'));var grid=el('div','ss-done-grid');list.forEach(function(id,i){var done=state.done.includes(id),b=btn(g.name.charAt(0)+'-'+(i+1),done?'ss-checked':'',function(){go(id,true)});b.setAttribute('aria-label',title(id)+(done?' · 완료':' · 미완료'));grid.appendChild(b)});collection.appendChild(grid)})
+}
+function countPoints(){return ids.reduce(function(n,id){return n+(state.ink[id]||[]).reduce(function(v,s){return v+s.points.length},0)},0)}
+function setTool(next){tool=next;$('ss-pen').setAttribute('aria-pressed',tool==='pen'?'true':'false');$('ss-eraser').setAttribute('aria-pressed',tool==='erase'?'true':'false');canvas.style.cursor=tool==='erase'?'cell':'crosshair'}
+COLORS.forEach(function(c,i){var b=btn('','ss-swatch',function(){color=c;setTool('pen');dialog.querySelectorAll('.ss-swatch').forEach(function(x){x.setAttribute('aria-pressed',x===b?'true':'false')})});b.style.background=c;b.setAttribute('aria-label',['남색 펜','파란색 펜','갈색 펜','보라색 펜'][i]);b.setAttribute('aria-pressed',i===0?'true':'false');$('ss-pen-tools').insertBefore(b,$('ss-eraser'))});$('ss-pen').onclick=function(){setTool('pen')};$('ss-eraser').onclick=function(){setTool('erase')};
+function drawStroke(context,st,w,h){var p=st.points;context.save();context.globalCompositeOperation=st.tool==='erase'?'destination-out':'source-over';context.strokeStyle=st.color;context.fillStyle=st.color;context.lineWidth=(st.tool==='erase'?22:3.5)*w/700;context.lineCap='round';context.lineJoin='round';if(p.length===1){context.beginPath();context.arc(p[0][0]*w,p[0][1]*h,context.lineWidth/2,0,Math.PI*2);context.fill()}else{context.beginPath();context.moveTo(p[0][0]*w,p[0][1]*h);for(var i=1;i<p.length;i++)context.lineTo(p[i][0]*w,p[i][1]*h);context.stroke()}context.restore()}
+function redraw(){drawRaf=0;if(!ctx||!dialog.open||tab!=='ink')return;var r=canvas.getBoundingClientRect();if(!r.width||!r.height)return;var dpr=Math.min(window.devicePixelRatio||1,2),w=Math.round(r.width*dpr),h=Math.round(r.height*dpr);if(canvas.width!==w||canvas.height!==h){canvas.width=w;canvas.height=h}ctx.clearRect(0,0,w,h);(state.ink[current]||[]).forEach(function(st){drawStroke(ctx,st,w,h)})}
+function scheduleDraw(){if(!drawRaf)drawRaf=requestAnimationFrame(redraw)}
+function point(e){var r=canvas.getBoundingClientRect();return [Math.round(Math.max(0,Math.min(1,(e.clientX-r.left)/r.width))*10000)/10000,Math.round(Math.max(0,Math.min(1,(e.clientY-r.top)/r.height))*10000)/10000]}
+canvas.addEventListener('pointerdown',function(e){if(currentStroke||!ctx||e.isPrimary===false||(e.pointerType==='mouse'&&e.button!==0))return;var list=state.ink[current]||[];if(list.length>=120||countPoints()>=MAXPOINTS){say('필기량이 많습니다. 기록을 내려받은 뒤 정리해 주세요.');return}e.preventDefault();activePointer=e.pointerId;pending.ink.add(current);currentStroke={tool:tool,color:color,points:[point(e)]};if(!state.ink[current])state.ink[current]=[];state.ink[current].push(currentStroke);try{canvas.setPointerCapture(e.pointerId)}catch(x){}scheduleDraw()});
+canvas.addEventListener('pointermove',function(e){if(!currentStroke||e.pointerId!==activePointer)return;e.preventDefault();var p=point(e),last=currentStroke.points[currentStroke.points.length-1];if(Math.abs(p[0]-last[0])+Math.abs(p[1]-last[1])<0.002)return;if(currentStroke.points.length>=1200||countPoints()>=MAXPOINTS)return;currentStroke.points.push(p);scheduleDraw()});
+function endStroke(e){if(e&&e.pointerId!==activePointer)return;if(!currentStroke){activePointer=null;return}currentStroke=null;activePointer=null;saveNow();render()}
+['pointerup','pointercancel','lostpointercapture'].forEach(function(name){canvas.addEventListener(name,endStroke)});$('ss-undo').onclick=function(){endStroke();var list=state.ink[current]||[];if(!list.length)return;pending.ink.add(current);list.pop();if(!list.length)delete state.ink[current];saveNow();scheduleDraw();render()};$('ss-clear-ink').onclick=function(){if(!(state.ink[current]||[]).length)return;ask('이 단계의 손필기를 지울까요?','메모와 다른 단계의 기록은 그대로 남습니다.','손필기 지우기',function(){pending.ink.add(current);delete state.ink[current];saveNow();scheduleDraw();render()})};
+if(window.ResizeObserver)new ResizeObserver(scheduleDraw).observe(canvas);window.addEventListener('resize',scheduleDraw);
+$('ss-export').onclick=function(){endStroke();saveNow();var data={format:FORMAT,version:1,exportedAt:new Date().toISOString(),records:state};var blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'}),url=URL.createObjectURL(blob),a=el('a');a.href=url;a.download='특수학교_AI연수_내기록_'+new Date().toISOString().slice(0,10)+'.json';document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(url)},5000);say('내려받은 기록 파일에는 개인 필기가 들어 있습니다. 안전하게 보관하세요.')};
+$('ss-import').onclick=function(){$('ss-import-file').click()};$('ss-import-file').addEventListener('change',async function(){var file=this.files&&this.files[0];this.value='';if(!file)return;if(file.size>5*1024*1024){say('5MB 이하의 기록 파일만 불러올 수 있습니다.');return}var clean;try{var data=JSON.parse(await file.text());if(data.format!==FORMAT||data.version!==1)throw new Error('이 연수자료에서 내려받은 기록 파일을 골라 주세요.');clean=normalize(data.records)}catch(e){say(e.message||'파일을 읽지 못했습니다.');return}ask('기록을 불러올까요?','현재 브라우저의 기록을 파일 속 기록으로 바꿉니다. 필요한 현재 기록은 먼저 내려받아 두세요.','불러오기',function(){state=clean;state.generation=newGeneration();replacePending=true;clearPending();note.value=state.notes[current]||'';saveNow();render();scheduleDraw();say('기록을 불러왔습니다.')})});
+$('ss-clear-all').onclick=function(){ask('이 브라우저의 기록을 모두 지울까요?','메모·손필기·책갈피·완료 표시를 이 브라우저에서 지웁니다. 내려받은 백업 파일은 삭제되지 않습니다.','모두 지우기',function(){state=blank();state.generation=newGeneration();replacePending=true;clearPending();state.last=current;currentStroke=null;activePointer=null;printout.replaceChildren();note.value='';var cleared=saveNow();render();scheduleDraw();say(cleared?'이 브라우저의 개인 기록을 지웠습니다.':'화면의 기록을 비웠습니다. 저장 접근이 막혀 있어 브라우저 설정에서도 사이트 데이터를 지워 주세요.')})};
+var printout=el('div');printout.id='ss-printout';document.body.appendChild(printout);
+$('ss-print').onclick=function(){endStroke();saveNow();printout.replaceChildren();printout.appendChild(el('h1',null,'특수학교 AI 실습 연수 · 내 기록'));printout.appendChild(el('p',null,'실습 '+state.done.length+'/15 완료 · '+new Date().toLocaleDateString('ko-KR')));var any=false;ids.forEach(function(id){if(!state.notes[id]&&!hasInk(id)&&!state.bookmarks.includes(id))return;any=true;var article=el('article');article.appendChild(el('h2',null,title(id)+(state.bookmarks.includes(id)?' · 책갈피':'')));if(state.notes[id])article.appendChild(el('p',null,state.notes[id]));if(hasInk(id)){var c=document.createElement('canvas');c.width=1000;c.height=700;var pc=c.getContext('2d');(state.ink[id]||[]).forEach(function(st){drawStroke(pc,st,1000,700)});c.setAttribute('role','img');c.setAttribute('aria-label',title(id)+' 손필기');article.appendChild(c)}printout.appendChild(article)});if(!any)printout.appendChild(el('p',null,'아직 남긴 메모나 책갈피가 없습니다.'));document.body.classList.add('ss-print-records');window.print()};window.addEventListener('afterprint',function(){document.body.classList.remove('ss-print-records');printout.replaceChildren()});
+$('t-print').addEventListener('click',function(){document.body.classList.remove('ss-print-records');printout.replaceChildren()},true);
+document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='p'){document.body.classList.remove('ss-print-records');printout.replaceChildren()}},true);
+window.addEventListener('pagehide',function(){endStroke();saveNow()});document.addEventListener('visibilitychange',function(){if(document.hidden){endStroke();saveNow()}});
+window.addEventListener('storage',function(e){if(e.key!==KEY&&e.key!==null)return;var latest;try{latest=e.newValue?normalize(JSON.parse(e.newValue)):blank()}catch(x){return}clearTimeout(saveTimer);saveTimer=null;if(!e.newValue||latest.generation!==state.generation){state=latest;clearPending();currentStroke=null;activePointer=null;printout.replaceChildren();note.value=state.notes[current]||'';say('다른 탭에서 바뀐 기록을 반영했습니다.')}else{state=mergeRecords(latest,state);if(!pending.notes.has(current))note.value=state.notes[current]||'';if(Object.keys(pending).some(function(k){return pending[k].size>0}))dirty()}render();scheduleDraw()});
+if(storageError){status.textContent='저장 사용할 수 없음';status.classList.add('ss-error');hint.textContent=storageError;hint.classList.add('ss-unsaved')}
+render();if(loaded&&!location.hash&&state.last!=='intro')go(state.last,false);if(window.innerWidth<=820&&current!=='intro')requestAnimationFrame(function(){toolbar.scrollIntoView({block:'start'})});
+})();
+
+</script>
 </body>
 </html>
